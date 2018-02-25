@@ -1,0 +1,14 @@
+{
+  "name": "dreambox",
+  "version": "1.0.0",
+  "description": "Frontend bits of the dreambox project.",
+  "author": "Ramon Blanquer",
+  "license": "ISC",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}

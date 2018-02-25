@@ -1,0 +1,20 @@
+frontend:
+  restart: always
+  build: ./frontend
+  expose:
+    - "3000"
+
+backend:
+  restart: always
+  build: ./backend
+  expose:
+    - "4000"
+
+nginx:
+  restart: always
+  build: ./nginx
+  ports:
+    - "80:80"
+  links:
+    - frontend:frontend
+    - backend:backend
