@@ -1,0 +1,13 @@
+version: "3"
+services:
+  frontend:
+    volumes:
+      - ./frontend:/dreambox/frontend
+    environment:
+      NODE_ENV: 'development'
+
+  backend:
+    volumes:
+      - ./backend:/dreambox/backend
+    environment:
+      DEBUG: '1'

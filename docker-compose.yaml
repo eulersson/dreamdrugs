@@ -1,20 +1,29 @@
-frontend:
-  restart: always
-  build: ./frontend
-  expose:
-    - "3000"
+version: "3"
+services:
+  frontend:
+    restart: always
+    build: ./frontend
+    expose:
+      - "3000"
+    volumes:
+      - image-uploads:/uploads
 
-backend:
-  restart: always
-  build: ./backend
-  expose:
-    - "4000"
+  backend:
+    restart: always
+    build: ./backend
+    expose:
+      - "4000"
+    volumes:
+      - image-uploads:/uploads
 
-nginx:
-  restart: always
-  build: ./nginx
-  ports:
-    - "80:80"
-  links:
-    - frontend:frontend
-    - backend:backend
+  nginx:
+    restart: always
+    build: ./nginx
+    ports:
+      - "80:80"
+    links:
+      - frontend
+      - backend
+
+volumes:
+  image-uploads:
