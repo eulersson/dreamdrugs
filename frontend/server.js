@@ -2,16 +2,20 @@ const express = require('express')
 const multer = require('multer')
 const app = express()
 
-var storage = multer.diskStorage({
-  destination: function(req, file, callback) {
-    callback(null, './uploads');
-  },
-  filename: function(req, file, callback) {
-    callback(null, Date.now() + file.originalname);
-  }
+const storage = multer.diskStorage({
+  destination: (req, file, callback) => callback(null, '/uploads'),
+  filename: (req, file, callback) => callback(null, file.originalname)
+});
+
+const upload = multer({storage: storage}).single('me');
+app.post('/upload', (req, res) => {
+  upload(req, res, err => {
+    if (err) {
+      return res.end("Error uploading file.");
+    }
+    res.send("File is uploaded.");
+  })
 });
 
 app.get('/', (req, res) => res.send("Hello from frontend!"))
 app.listen(3000, () => console.log(`Example app listening! NODE_ENV: ${process.env.NODE_ENV}`))
-
-
