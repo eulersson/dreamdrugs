@@ -3,7 +3,7 @@ from flask import Flask, request
 from dreambox.times import Model as TimesModel
 
 ADDR = "0.0.0.0"
-PORT = 4000
+PORT = int(os.getenv('FLASKPORT', '4000'))
 DEBUG = bool(int(os.getenv('DEBUG', '1')))
 
 app = Flask(__name__)
@@ -11,7 +11,7 @@ timesTenModel = TimesModel(10)
 
 @app.route('/')
 def index():
-    return "Helloo from the backend!"
+    return "Hello from the backend!"
 
 @app.route('/timesten')
 def timesten():

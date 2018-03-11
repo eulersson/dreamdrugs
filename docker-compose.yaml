@@ -12,7 +12,7 @@ services:
     restart: always
     build: ./backend
     expose:
-      - "4000"
+      - "8000"
     volumes:
       - image-uploads:/uploads
 

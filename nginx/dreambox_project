@@ -3,7 +3,7 @@ upstream dreambox-frontend {
 }
 
 upstream dreambox-backend {
-    server backend:4000;
+    server backend:8000;
 }
 
 server {

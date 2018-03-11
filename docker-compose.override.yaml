@@ -10,4 +10,5 @@ services:
     volumes:
       - ./backend:/dreambox/backend
     environment:
-      DEBUG: '1'
+      - DEBUG=1
+      - FLASKPORT=8000

@@ -1,0 +1,11 @@
+version: "3"
+services:
+  frontend:
+    environment:
+      - NODE_ENV='production'
+
+  backend:
+    environment:
+      - DEBUG=0
+      - FLASKPORT=4000
+      - GUNICORNPORT=8000
