@@ -1,3 +1,4 @@
+const axios = require('axios')
 const express = require('express')
 const multer = require('multer')
 const app = express()
@@ -13,6 +14,9 @@ app.post('/upload', (req, res) => {
     if (err) {
       return res.end("Error uploading file.");
     }
+    axios.get('http://api.dreambox.com/newimage?image=3')
+      .then(response => console.log(response))
+      .catch(error => console.log(error))
     res.send("File is uploaded.");
   })
 });

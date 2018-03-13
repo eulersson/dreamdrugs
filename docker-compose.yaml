@@ -22,8 +22,13 @@ services:
     ports:
       - "80:80"
     links:
-      - frontend
       - backend
+      - frontend
+    networks:
+      default:
+        aliases:
+          - dreambox.com
+          - api.dreambox.com
 
 volumes:
   image-uploads:
