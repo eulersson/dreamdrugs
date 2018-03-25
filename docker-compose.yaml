@@ -29,6 +29,8 @@ services:
         aliases:
           - dreambox.com
           - api.dreambox.com
+    volumes:
+      - image-uploads:/uploads
 
 volumes:
   image-uploads:

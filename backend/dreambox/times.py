@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-class Model(object):
+class TimesModel(object):
     def __init__(self, multiplier):
         self.x = tf.placeholder(tf.float32)
         self.factor = tf.constant(multiplier, dtype=tf.float32)

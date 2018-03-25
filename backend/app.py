@@ -1,6 +1,7 @@
 import os
 from flask import Flask, request
-from dreambox.times import Model as TimesModel
+from dreambox.times import TimesModel
+from dreambox.glitch import GlitchModel
 
 ADDR = "0.0.0.0"
 PORT = int(os.getenv('FLASKPORT', '4000'))
@@ -8,6 +9,7 @@ DEBUG = bool(int(os.getenv('DEBUG', '1')))
 
 app = Flask(__name__)
 timesTenModel = TimesModel(10)
+glitchModel = GlitchModel()
 
 @app.route('/')
 def index():
@@ -15,8 +17,9 @@ def index():
 
 @app.route('/newimage')
 def new_image():
-    x = request.args.get('image', type=str)
-    return "New image path is {}".format(x)
+    impath = request.args.get('image', type=str)
+    outimpath = glitchModel.run(impath)
+    return "New image path is {}".format(outimpath)
 
 @app.route('/timesten')
 def timesten():
