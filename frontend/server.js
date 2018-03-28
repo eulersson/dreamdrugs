@@ -4,6 +4,7 @@ const multer = require('multer')
 
 const app = express()
 app.use('/pictures', express.static('/uploads'))
+app.use('/static', express.static(__dirname + '/static'))
 
 
 const storage = multer.diskStorage({
