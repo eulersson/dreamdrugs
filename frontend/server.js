@@ -4,7 +4,7 @@ const multer = require('multer')
 
 const app = express()
 app.use('/pictures', express.static('/uploads'))
-app.use('/static', express.static(__dirname + '/static'))
+app.use('/public', express.static(__dirname + '/public'))
 
 
 const storage = multer.diskStorage({
@@ -26,4 +26,7 @@ app.post('/upload', (req, res) => {
 });
 
 app.get('/', (req, res) => res.send('Hello from frontend! <img src="/pictures/deep_me.jpg">'))
-app.listen(3000, () => console.log(`Example app listening! NODE_ENV: ${process.env.NODE_ENV}`))
+app.get('/users', (req, res) => {
+  res.send([{'a':1,'b':2}]);
+})
+app.listen(3001, () => console.log(`Example app listening! NODE_ENV: ${process.env.NODE_ENV}`))

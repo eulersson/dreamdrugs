@@ -1,17 +1,24 @@
 {
   "name": "dreambox",
-  "version": "1.0.0",
-  "description": "Frontend bits of the dreambox project.",
-  "author": "Ramon Blanquer",
-  "license": "ISC",
-  "main": "server.js",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "start": "nodemon -L server.js"
+    "start": "concurrently \"npm run start:server\" \"npm run start:client\"",
+    "start:client": "react-scripts start",
+    "start:server": "nodemon -L server.js",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "concurrently": "^3.5.1",
     "express": "^4.16.2",
     "multer": "^1.3.0",
-    "nodemon": "^1.17.1"
-  }
+    "nodemon": "^1.17.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-scripts": "^1.1.1"
+  },
+  "proxy": "http://frontend:3001"
 }
