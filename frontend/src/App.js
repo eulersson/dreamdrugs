@@ -1,34 +1,35 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import axios from 'axios';
 import './App.css';
 
 class App extends Component {
-  state = {users: ['giii']};
+  constructor() {
+    super();
+    this.state = { impath: '' };
+    this.handleUpload = this.handleUpload.bind(this);
+  }
 
-  componentDidMount() {
-    console.log("im here!!!!");
-    fetch('/users')
+  handleUpload(ev) {
+    const data = new FormData();
+    data.append('file', ev.target.files[0]);
+    axios.post('/upload', data)
       .then(res => {
-        console.log(res);
-        return res.json()
-      })
-      .then(data => {
-        console.log(data);
-        this.setState({ users: JSON.stringify(data) })
+        if (res.data.status === 500) {
+          console.error(res.data.message); 
+        } else {
+          this.setState({ impath: res.data.body });
+        }
       });
   }
 
   render() {
+    console.log(this.state.impath);
+    const ifNoImage = this.state.impath === '';
+    const im = ifNoImage ? '' : <img alt="img" src={this.state.impath} />
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>Users: {this.state.users}</p>
+          <input type="file" onChange={this.handleUpload}/>
+          {im}
       </div>
     );
   }

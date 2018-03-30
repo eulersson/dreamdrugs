@@ -3,30 +3,34 @@ const express = require('express')
 const multer = require('multer')
 
 const app = express()
-app.use('/pictures', express.static('/uploads'))
-app.use('/public', express.static(__dirname + '/public'))
-
 
 const storage = multer.diskStorage({
   destination: (req, file, callback) => callback(null, '/uploads'),
   filename: (req, file, callback) => callback(null, file.originalname)
 });
 
-const upload = multer({storage: storage}).single('me');
+const upload = multer({storage: storage}).single('file');
 app.post('/upload', (req, res) => {
   upload(req, res, err => {
     if (err) {
-      return res.end("Error uploading file.");
+      res.end("Error uploading file.");
     }
     axios.get(`http://api.dreambox.com/newimage?image=${req.file.path}`)
-      .then(response => console.log(response))
-      .catch(error => console.log(error))
-    res.send("File is uploaded.");
+      .then(response => {
+        res.json({
+          status: response.status,
+          message: "all good",
+          body: response.data
+        });
+      })
+      .catch(error => {
+        res.json({
+          status: error.response.status,
+          message: error.response.statusText,
+          body: error.response.data
+        });
+      });
   })
 });
 
-app.get('/', (req, res) => res.send('Hello from frontend! <img src="/pictures/deep_me.jpg">'))
-app.get('/users', (req, res) => {
-  res.send([{'a':1,'b':2}]);
-})
 app.listen(3001, () => console.log(`Example app listening! NODE_ENV: ${process.env.NODE_ENV}`))

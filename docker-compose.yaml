@@ -3,16 +3,12 @@ services:
   frontend:
     restart: always
     build: ./frontend
-    expose:
-      - "3000"
     volumes:
       - image-uploads:/uploads
 
   backend:
     restart: always
     build: ./backend
-    expose:
-      - "8000"
     volumes:
       - image-uploads:/uploads
 

@@ -20,5 +20,5 @@
     "react-dom": "^16.2.0",
     "react-scripts": "^1.1.1"
   },
-  "proxy": "http://frontend:3001"
+  "proxy": "http://0.0.0.0:3001"
 }

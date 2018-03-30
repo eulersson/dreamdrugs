@@ -10,5 +10,6 @@ services:
     volumes:
       - ./backend:/dreambox/backend
     environment:
+      - PYTHONUNBUFFERED=1
       - DEBUG=1
       - FLASKPORT=8000
