@@ -1,9 +1,11 @@
-FROM node:carbon
+FROM node:8-slim
+
 WORKDIR /dreambox/frontend
 
-COPY package*.json ./
-RUN npm install
+COPY package.json yarn.lock ./
+
+RUN yarn install
 
 COPY . .
 
-CMD ["npm", "start"]
+CMD yarn start
