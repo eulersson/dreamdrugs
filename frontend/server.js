@@ -5,6 +5,9 @@ const multer = require('multer')
 var isDev = process.env.NODE_ENV !== 'production';
 const app = express()
 
+app.use(express.json({ limit: '5mb'}));
+app.use(express.urlencoded({ extended: true }));
+
 if (isDev) {
   const webpack = require('webpack');
   const webpackConfig = require('./webpack.config');
@@ -48,6 +51,15 @@ app.post('/upload', (req, res) => {
         });
       });
   })
+});
+
+app.post('/snap', (req, res) => {
+  console.log(Object.keys(req.body));
+	const base64Data = req.body.image.replace(/^data:image\/png;base64,/, "");
+	require("fs").writeFile("/uploads/out.jpg", base64Data, 'base64', function(err) {
+		console.log(err);
+	});
+  res.status(200).send('/uploads/out.jpg');
 });
 
 app.listen(3000, () => console.log(`Example app listening! NODE_ENV: ${process.env.NODE_ENV}`))
