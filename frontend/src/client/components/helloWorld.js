@@ -1,6 +1,7 @@
 import React from 'react'
 import { hot } from 'react-hot-loader'
 import axios from 'axios';
+import './helloWorld.css';
 
 class HelloWorld extends React.Component {
   constructor() {
