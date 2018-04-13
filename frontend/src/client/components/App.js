@@ -1,9 +1,9 @@
 import React from 'react'
 import { hot } from 'react-hot-loader'
 import axios from 'axios';
-import './helloWorld.css';
+import './App.css';
 
-class HelloWorld extends React.Component {
+class App extends React.Component {
   constructor() {
     super();
     this.state = { 
@@ -77,7 +77,7 @@ class HelloWorld extends React.Component {
     const ifNoImage = this.state.impath === '';
     const im = ifNoImage ? '' : <img alt="img" src={this.state.impath} />
     return (
-      <div className="HelloWorld">
+      <div className="App">
         <button onClick={this.snap}>Snap</button>
         <canvas style={{display: "none"}}></canvas>
         <video autoPlay></video>
@@ -88,4 +88,4 @@ class HelloWorld extends React.Component {
   }
 }
 
-export default hot(module)(HelloWorld)
+export default hot(module)(App)
