@@ -2,6 +2,7 @@ import React from 'react'
 import { hot } from 'react-hot-loader'
 import axios from 'axios';
 import './App.css';
+import Loader from 'react-loader';
 
 class App extends React.Component {
   constructor() {
@@ -49,10 +50,12 @@ class App extends React.Component {
       this.snap();
     } else {
       console.log("reverting!");
+      this.setState({ impath: '' });
     }
   }
 
   snap() {
+    this.setState({ snapped: true });
     const video = document.querySelector('video');
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth;
@@ -64,8 +67,7 @@ class App extends React.Component {
       .then(res => {
         console.log(res.data);
         this.setState({
-          impath: res.data.body,
-          snapped: true
+          impath: res.data.body
         });
       })
       .catch(err => console.error(err));
@@ -96,14 +98,21 @@ class App extends React.Component {
     let buttonStyle;
     let buttonText;
     let buttonClasses;
+    let result;
     if (this.state.snapped) {
       //main = <img alt="deep" src={this.state.impath} />;
       buttonText = 'Again';
       buttonClasses = 'button again';
+      result = (
+        <Loader loaded={this.state.impath !== '' }>
+          <img alt="deep" src={this.state.impath} />
+        </Loader>
+      );
     } else {
       //main = <video autoPlay></video>
       buttonText = 'Snap';
       buttonClasses = 'button snap';
+      result = '';
     }
     
     return (
@@ -115,7 +124,7 @@ class App extends React.Component {
         </div>
         <div id="middle">
           <canvas style={{display: "none"}}></canvas>
-          <img style={{display: this.state.snapped ? "initial" : "none"}} alt="deep" src={this.state.impath} />
+          {result}
           <video style={{display: this.state.snapped ? "none" : "initial"}} autoPlay></video>
         </div>
         <div id="footer"></div>

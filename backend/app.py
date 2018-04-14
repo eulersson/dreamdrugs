@@ -1,5 +1,6 @@
 import os
 import logging
+import time
 
 from flask import Flask, request
 from dreambox.times import TimesModel
@@ -23,6 +24,7 @@ def new_image():
     impath = request.args.get('image', type=str)
     impath = glitchModel.initialize(impath)
     outimpath = glitchModel.run(impath)
+    time.sleep(2)
     return outimpath
 
 
