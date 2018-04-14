@@ -19,7 +19,7 @@ class GlitchModel(object):
         in_img = Image.open(impath)
         in_img = in_img.resize(self.imshape[0:2])
 
-        self.img_data = np.asarray(in_img)
+        self.img_data = np.asarray(in_img.convert('RGB'))
         self.img_data = np.reshape(self.img_data, self.imsize_flat)
 
         self.x = tf.placeholder(tf.float32, shape=self.imsize_flat)

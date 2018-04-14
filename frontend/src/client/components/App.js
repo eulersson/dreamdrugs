@@ -7,8 +7,10 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = { 
-      impath: ''
+      impath: '',
+      snapped: false
     };
+    this.buttonClicked = this.buttonClicked.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
     this.snap = this.snap.bind(this);
   }
@@ -40,6 +42,16 @@ class App extends React.Component {
     }
   }
 
+  buttonClicked() {
+    const snapped = !this.state.snapped;
+    this.setState({ snapped: snapped });
+    if (snapped) {
+      this.snap();
+    } else {
+      console.log("reverting!");
+    }
+  }
+
   snap() {
     const video = document.querySelector('video');
     const canvas = document.createElement('canvas');
@@ -51,7 +63,10 @@ class App extends React.Component {
     axios.post('/snap', {image: encodedImage})
       .then(res => {
         console.log(res.data);
-        this.setState({ impath: res.data });
+        this.setState({
+          impath: res.data.body,
+          snapped: true
+        });
       })
       .catch(err => console.error(err));
   }
@@ -68,21 +83,42 @@ class App extends React.Component {
         if (res.data.status === 500) {
           console.error(res.data.message); 
         } else {
-          this.setState({ impath: res.data.body });
+          this.setState({
+            impath: res.data.body,
+            snapped: true
+          });
         }
       });
   }
 
   render() {
-    const ifNoImage = this.state.impath === '';
-    const im = ifNoImage ? '' : <img alt="img" src={this.state.impath} />
+    let main;
+    let buttonStyle;
+    let buttonText;
+    let buttonClasses;
+    if (this.state.snapped) {
+      //main = <img alt="deep" src={this.state.impath} />;
+      buttonText = 'Again';
+      buttonClasses = 'button again';
+    } else {
+      //main = <video autoPlay></video>
+      buttonText = 'Snap';
+      buttonClasses = 'button snap';
+    }
+    
     return (
       <div className="App">
-        <button onClick={this.snap}>Snap</button>
-        <canvas style={{display: "none"}}></canvas>
-        <video autoPlay></video>
-        <input type="file" onChange={this.handleUpload}/>
-        {im}
+        <div id="header">
+          <button
+            className={buttonClasses}
+            onClick={this.buttonClicked}>{buttonText}</button>
+        </div>
+        <div id="middle">
+          <canvas style={{display: "none"}}></canvas>
+          <img style={{display: this.state.snapped ? "initial" : "none"}} alt="deep" src={this.state.impath} />
+          <video style={{display: this.state.snapped ? "none" : "initial"}} autoPlay></video>
+        </div>
+        <div id="footer"></div>
       </div>
     )
   }

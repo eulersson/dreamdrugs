@@ -29,13 +29,8 @@ const storage = multer.diskStorage({
   filename: (req, file, callback) => callback(null, file.originalname)
 });
 
-const upload = multer({storage: storage}).single('file');
-app.post('/upload', (req, res) => {
-  upload(req, res, err => {
-    if (err) {
-      res.end("Error uploading file.");
-    }
-    axios.get(`http://api.dreambox.com/newimage?image=${req.file.path}`)
+function passImageToBackend(imagePath, res) {
+    axios.get(`http://api.dreambox.com/newimage?image=${imagePath}`)
       .then(response => {
         res.json({
           status: response.status,
@@ -50,7 +45,16 @@ app.post('/upload', (req, res) => {
           body: error.response.data
         });
       });
-  })
+}
+
+const upload = multer({storage: storage}).single('file');
+app.post('/upload', (req, res) => {
+  upload(req, res, err => {
+    if (err) {
+      res.end("Error uploading file.");
+    }
+    passImageToBackend(req.file.path, res);
+  });
 });
 
 app.post('/snap', (req, res) => {
@@ -58,7 +62,7 @@ app.post('/snap', (req, res) => {
 	require("fs").writeFile("/uploads/out.jpg", base64Data, 'base64', function(err) {
 		console.log(err);
 	});
-  res.send('/uploads/out.jpg');
+  passImageToBackend("/uploads/out.jpg", res);
 });
 
 app.listen(3000, () => console.log(`Example app listening! NODE_ENV: ${process.env.NODE_ENV}`))

@@ -1,3 +1,71 @@
-.App {
-  background-color: red;
+html, body {
+	margin: 0;
+	width: 100%;
+	height: 100%;
 }
+
+.button {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  border: none;
+  border-radius: 15px;
+}
+
+.button:active {
+  transform: translateY(4px);
+}
+
+.button.snap {
+  background-color: #4caf50;
+  box-shadow: 0 9px #446644;
+}
+
+.button.snap:hover {
+  background-color: #3e8e41
+}
+
+.button.snap:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #446644;
+}
+
+.button.again {
+  background-color: #e78947;
+  box-shadow: 0 9px #bd703a;
+}
+
+.button.again:hover {
+  background-color: #dd8344;
+}
+
+.button.again:active {
+  background-color: #dd8344;
+  box-shadow: 0 5px #bd703a;
+}
+.App {
+	text-align: center;
+}
+
+#header {
+	width: 100%;
+	padding-top: 5px;
+	top: 0;
+	position: absolute;
+	z-index: 10;
+}
+
+#middle {
+	top: 0;
+	z-index: 1;
+}
+
+video, img {
+	width: 100%;
+}
+
