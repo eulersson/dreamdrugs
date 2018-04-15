@@ -17,35 +17,32 @@ class GlitchModel(object):
         log.info("Trying to load {}".format(impath))
 
         in_img = Image.open(impath)
-        print(in_img.size)
         in_img = in_img.resize(self.imshape[0:2])
-        #in_img = in_img.transpose(Image.ROTATE_90)
-        print("in_img.size", in_img.size)
-        print("in_img.mode", in_img.mode)
 
         self.img_data = np.array(in_img)
-        print("self.img_data.shape", self.img_data.shape)
-        self.img_data = self.img_data[...,:3] # Drops the alpha channel
-        print("self.img_data.shape", self.img_data.shape)
-        self.img_data = np.transpose(self.img_data, (1, 0, 2)) # numpy-style is column-major, Pillow is row-major
-        print("self.img_data.shape", self.img_data.shape)
+
+        # Drop the alpha channel as we do not want it.
+        self.img_data = self.img_data[...,:3]
+
+        # numpy-style is column-major, Pillow is row-major
+        self.img_data = np.transpose(self.img_data, (1, 0, 2))
+
         self.img_data = np.reshape(self.img_data, self.imsize_flat)
 
+        # All the calculations happen using float32, in the end we give uint8.
         self.x = tf.placeholder(tf.float32, shape=self.imsize_flat)
 
         factor_array = np.arange(1, 0, -1.0 / float(self.imsize_flat))
         factor = tf.constant(factor_array, dtype=tf.float32)
-        #self.result = tf.multiply(self.x, factor)
-        self.result = self.x
+
+        self.result = tf.multiply(self.x, factor)
+        self.result = tf.cast(self.result, tf.uint8)
 
         self.sess = tf.Session()
 
     def run(self, impath):
         out_img_flat = self.sess.run(self.result, feed_dict={self.x: self.img_data})
-        print(1111)
-        print(self.imshape)
-        #out_img_data = np.reshape(out_img_flat, self.imshape)
-        out_img_data = np.reshape(self.img_data, self.imshape)
+        out_img_data = np.reshape(out_img_flat, self.imshape)
 
         out_img_data = np.transpose(out_img_data, (1, 0, 2)) # numpy-style is column-major, Pillow is row-major
         out_path = '/uploads/%s.jpg' % (datetime.now().strftime('%Y%m%d%H%M%S'))
