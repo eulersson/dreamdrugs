@@ -5,6 +5,7 @@ import time
 from flask import Flask, request
 from dreambox.times import TimesModel
 from dreambox.glitch import GlitchModel
+from dreambox.inception5h import Inception5hModel
 
 ADDR = "0.0.0.0"
 PORT = int(os.getenv('FLASKPORT', '4000'))
@@ -17,14 +18,13 @@ if DEBUG:
 
 timesTenModel = TimesModel(10)
 glitchModel = GlitchModel()
+inception5hModel = Inception5hModel()
 
 
 @app.route('/newimage')
 def new_image():
     impath = request.args.get('image', type=str)
-    impath = glitchModel.initialize(impath)
-    outimpath = glitchModel.run(impath)
-    time.sleep(2)
+    outimpath = inception5hModel.run(impath)
     return outimpath
 
 
