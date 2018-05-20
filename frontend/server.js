@@ -24,6 +24,7 @@ if (isDev) {
 } else {
   app.use(express.static('dist'))
 }
+
 const storage = multer.diskStorage({
   destination: (req, file, callback) => callback(null, '/uploads'),
   filename: (req, file, callback) => callback(null, file.originalname)
