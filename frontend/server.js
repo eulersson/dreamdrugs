@@ -66,4 +66,16 @@ app.post('/snap', (req, res) => {
   passImageToBackend("/uploads/out.jpg", res);
 });
 
+app.get('/progress', (req, res) => {
+  axios.get(`http://api.dreambox.com/progress`)
+    .then(response => {
+      res.json({
+        progress: response.data
+      });
+    })
+    .catch(error => {
+      console.error(error);
+    });
+});
+
 app.listen(3000, () => console.log(`Example app listening! NODE_ENV: ${process.env.NODE_ENV}`))

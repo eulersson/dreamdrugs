@@ -30,6 +30,7 @@ input_tensor_name = "input:0"
 
 class Inception5hModel:
     def __init__(self):
+        self.progress = 0
         def hook(count, block_size, total_size):
             percentage = float(count * block_size) / total_size
             log.info("Download progress: {:.1%}".format(percentage))
@@ -86,8 +87,12 @@ class Inception5hModel:
             step_size_scaled = step_size / (np.std(g) + 1e-8)
 
             img += step_size_scaled * g
-            print("octave: %d/%d iteration: %d/%d" % (current_octave, num_octaves, it, num_iterations))
-            print(".")
+
+            total_num_iters = num_octaves * num_iterations
+            octaves_completed = current_octave - 1
+            iters_completed = octaves_completed * num_iterations + it + 1
+            percentage = iters_completed / float(total_num_iters) * 100.0
+            self.progress = percentage
 
         print("Done!")
 
@@ -106,7 +111,7 @@ class Inception5hModel:
         rescale_factor=0.7,
         step_size=3.0
     ):
-        if depth_level > 0:
+        if depth_level > 1:
             sigma = 0.5
             img_blur = gaussian_filter(image, sigma=(sigma, sigma, 0.0))
             img_downscaled = resize_image(img_blur, factor=rescale_factor)
@@ -137,14 +142,17 @@ class Inception5hModel:
         )
         return img_result
 
+    def reset_progress(self):
+        self.progress = 0
+
     def run(
         self,
         impath,
         blend=0.2,
-        depth_level=4,
+        depth_level=3,
         feature_channel=None,
         layer_name='mixed4a',
-        num_iterations=10,
+        num_iterations=5,
         rescale_factor=0.7,
         squared=True,
         step_size=1.5

@@ -2,7 +2,9 @@ import React from 'react'
 import { hot } from 'react-hot-loader'
 import axios from 'axios';
 import './App.css';
+import Progress from './Progress.js';
 import Loader from 'react-loader';
+
 
 class App extends React.Component {
   constructor() {
@@ -104,9 +106,9 @@ class App extends React.Component {
       buttonText = 'Again';
       buttonClasses = 'button again';
       result = (
-        <Loader loaded={this.state.impath !== '' }>
+        <Progress endpoint="/progress">
           <img alt="deep" src={this.state.impath} />
-        </Loader>
+        </Progress>
       );
     } else {
       //main = <video autoPlay></video>
