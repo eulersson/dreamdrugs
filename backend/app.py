@@ -1,5 +1,6 @@
-import os
 import logging
+import math
+import os
 import time
 
 from flask import Flask, request
@@ -43,8 +44,8 @@ def timesten():
 
 @app.route('/progress')
 def progress():
-    progress = "%.2f" % PROGRESS.progress if PROGRESS else "0.00"
-    if progress == "100.00":
+    progress = str(int(round(PROGRESS.progress))) if PROGRESS else "0"
+    if progress == "100":
         inception5hModel.reset_progress()
         PROGRESS.reset_progress()
     return progress

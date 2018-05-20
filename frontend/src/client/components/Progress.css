@@ -1,6 +1,12 @@
 .Progress {
-  padding: 10px;
-  height: 100px;
-  width: 100px;
-  background-color: red;
+  height: 100%;
+  width: 100%;
+  background-color: black;
+  color: white;
+}
+
+.Progress .percentage {
+  font-size: 100px;
+  position: relative;
+  top: 50%;
 }

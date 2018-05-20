@@ -9,7 +9,8 @@ class Progress extends React.Component {
     super();
 
     this.state = {
-      progress: 0
+      progress: 0,
+      loaded: false
     };
   }
 
@@ -23,6 +24,8 @@ class Progress extends React.Component {
           that.setState({ progress: progress });
           if (progress != 100) {
             setTimeout(fetchProgress, 350);
+          } else {
+            that.setState({ loaded: true });
           }
         });
     };
@@ -30,7 +33,15 @@ class Progress extends React.Component {
   }
 
   render() {
-    return <div className="Progress">{this.state.progress}</div>
+    if (this.state.loaded) {
+      return this.props.children
+    } else {
+      return (
+        <div className="Progress">
+          <div className="percentage">{this.state.progress}%</div>
+        </div>
+      );
+    }
   }
 }
 
