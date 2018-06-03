@@ -22,6 +22,10 @@ class App extends React.Component {
     this.snap = this.snap.bind(this);
   }
 
+  componentDidMount() {
+    this.initializeCamera();
+  }
+
   // Sets up HTML5 features to couple up a canvas with the webcam.
   initializeCamera() {
     function hasGetUserMedia() {
@@ -95,10 +99,6 @@ class App extends React.Component {
           });
         }
       });
-  }
-
-  componentDidMount() {
-    this.initializeCamera();
   }
 
   render() {
