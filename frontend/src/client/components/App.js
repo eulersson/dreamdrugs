@@ -9,15 +9,20 @@ import Loader from 'react-loader';
 class App extends React.Component {
   constructor() {
     super();
-    this.state = { 
+    this.state = {
+      // Resulting image path returned from the backend.
       impath: '',
-      snapped: false
+      // State defining the moment when image is loading or loaded.
+      snapped: false 
     };
+
+    // Method binding.
     this.buttonClicked = this.buttonClicked.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
     this.snap = this.snap.bind(this);
   }
 
+  // Sets up HTML5 features to couple up a canvas with the webcam.
   initializeCamera() {
     function hasGetUserMedia() {
       return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
@@ -41,21 +46,21 @@ class App extends React.Component {
         .then(handleSuccess)
         .catch(handleError);
     } else {
-      alert('getUserMedia is not available :(');
+      alert('Oh, getUserMedia is not available :(');
     }
   }
 
+  // Fired when the Snap / Try Again button is clicked.
   buttonClicked() {
     const snapped = !this.state.snapped;
-    this.setState({ snapped: snapped });
     if (snapped) {
       this.snap();
     } else {
-      console.log("reverting!");
       this.setState({ impath: '' });
     }
   }
 
+  // When using web camera.
   snap() {
     this.setState({ snapped: true });
     const video = document.querySelector('video');
@@ -75,10 +80,7 @@ class App extends React.Component {
       .catch(err => console.error(err));
   }
 
-  componentDidMount() {
-    this.initializeCamera();
-  }
-
+  // When using file upload dialog.
   handleUpload(ev) {
     const data = new FormData();
     data.append('file', ev.target.files[0]);
@@ -95,14 +97,16 @@ class App extends React.Component {
       });
   }
 
+  componentDidMount() {
+    this.initializeCamera();
+  }
+
   render() {
-    let main;
-    let buttonStyle;
     let buttonText;
     let buttonClasses;
     let result;
+
     if (this.state.snapped) {
-      //main = <img alt="deep" src={this.state.impath} />;
       buttonText = 'Again';
       buttonClasses = 'button again';
       result = (
@@ -111,12 +115,11 @@ class App extends React.Component {
         </Progress>
       );
     } else {
-      //main = <video autoPlay></video>
       buttonText = 'Snap';
       buttonClasses = 'button snap';
       result = '';
     }
-    
+
     return (
       <div className="App">
         <div id="header">

@@ -4,10 +4,10 @@ import axios from 'axios';
 import './Progress.css';
 
 
+// Hides children until the response from progress reached 100.
 class Progress extends React.Component {
   constructor() {
     super();
-
     this.state = {
       progress: 0,
       loaded: false
@@ -15,13 +15,13 @@ class Progress extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.props);
     const that = this;
     function fetchProgress() {
       axios.get('/progress')
         .then(res => {
           const progress = res.data.progress;
           that.setState({ progress: progress });
+          
           if (progress != 100) {
             setTimeout(fetchProgress, 350);
           } else {

@@ -1,4 +1,5 @@
 *.pyc
 
+backend.log
 dev.py
 inception5h/
