@@ -16,7 +16,7 @@ from dreambox import Model
 from dreambox.utils import load_image, image_from_array, resize_image
 
 import logging
-log = logging.getLogger('dreambox.tf')
+log = logging.getLogger('dreambox')
 
 # Where to download the model from.
 model_url = 'http://storage.googleapis.com/download.tensorflow.org/models/inception5h.zip'

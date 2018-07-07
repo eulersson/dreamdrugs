@@ -22,15 +22,15 @@ app = Flask('dreambox')
 app.logger.setLevel(LEVEL)
 
 # Setup dreambox logger with a stream and file handler.
-dreambox_log = logging.getLogger('dreambox')
-dreambox_log.setLevel(LEVEL)
+log = logging.getLogger('dreambox')
+log.setLevel(LEVEL)
 fmt = logging.Formatter(FMT)
 ch = logging.StreamHandler()
 fh = logging.FileHandler('backend.log')
 ch.setFormatter(fmt)
 fh.setFormatter(fmt)
-dreambox_log.addHandler(ch)
-dreambox_log.addHandler(fh)
+log.addHandler(ch)
+log.addHandler(fh)
 
 # Construct model instances.
 MODELS = {

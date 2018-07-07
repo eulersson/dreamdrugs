@@ -89,6 +89,7 @@ app.post('/snap', (req, res) => {
 
 // Queries the progress coming from the backend server.
 app.get('/progress', (req, res) => {
+  console.log("server says getting progress");
   axios.get(`http://api.dreambox.com/progress`)
     .then(response => {
       res.json({

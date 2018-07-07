@@ -17,9 +17,11 @@ class Progress extends React.Component {
   componentDidMount() {
     const that = this;
     function fetchProgress() {
+      console.log("fetching progressi");
       axios.get('/progress')
         .then(res => {
           const progress = res.data.progress;
+          console.log(`progress is ${progress}`);
           that.setState({ progress: progress });
           
           if (progress != 100) {
