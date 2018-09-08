@@ -58,21 +58,21 @@ if (isDev) {
 // TODO: Use POST instead of get.
 function passImageToBackend(imagePath, res) {
   axios
-    .get('http://api.dreambox.com/dream', {
-      params: {
-        model: 'inception5h',
-        image: imagePath,
-        blend: 0.2,
-        depth_level: 2,
-        feature_channel: undefined,
-        layer_name: 'mixed4b',
-        num_iterations: 10,
-        rescale_factor: 0.7,
-        squared: true,
-        step_size: 1.5,
-      },
+    .post('http://api.dreambox.com/dream', {
+      model: 'inception5h',
+      image: imagePath,
+      blend: 0.2,
+      depth_level: 2,
+      feature_channel: undefined,
+      layer_name: 'mixed4b',
+      num_iterations: 10,
+      rescale_factor: 0.7,
+      squared: true,
+      step_size: 1.5,
     })
     .then((response) => {
+      console.log("Response from api is");
+      console.log(response.data);
       res.json({
         status: response.status,
         message: 'all good',
@@ -80,6 +80,7 @@ function passImageToBackend(imagePath, res) {
       });
     })
     .catch((error) => {
+      console.error("oooops");
       res.json({
         status: error.response.status,
         message: error.response.statusText,
@@ -111,6 +112,7 @@ app.post('/snap', (req, res) => {
   fs.writeFile('/uploads/out.jpg', base64Data, 'base64', (err) => {
     console.log(err);
   });
+  console.log("im snapping");
   passImageToBackend('/uploads/out.jpg', res);
 });
 

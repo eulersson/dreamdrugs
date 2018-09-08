@@ -1,6 +1,7 @@
 import logging
 import math
 import os
+import threading
 import time
 
 from flask import Flask, request
@@ -41,46 +42,25 @@ def dream():
     """
     Loads the passed image, processes it and returns a new one (as path).
     """
+    # Data from POST request as JSON.
+    data = request.get_json()
+
     # Get the model instance.
-    image_path = request.args.get('image', type=str)
-    model_name = request.args.get('model', type=str)
-    model = MODELS[model_name]()
+    model = MODELS[data.pop('model')]()
 
-    # Values come as strings from the url, we need to sanitize accordingly
-    # based on their type counterparts in javascript.
-    # TODO: instead of passing parameters through URI, we could send a data
-    # body and JSONify on frontend so in here we retain the types.
-    def sanitize(value):
-        if value.replace('.', '', 1).isdigit():
-            return float(value) if '.' in value else int(value)
+    # Run on a thread so it does not block.
+    # TODO: Think properly how to handle backend errors.
+    input_image_path = data.pop('image')
+    process = threading.Thread(
+        target=model.run,
+        args=(input_image_path,),
+        kwargs=data
+    )
+    process.start()
 
-        js_map = {
-            'false': False,
-            'true': True,
-            'undefined': None
-        }
-        return js_map[value] if value in js_map.keys() else value
-
-    # Prepare the kwargs to pass to the model's run function.
-    # TODO: optimize by popping first instead of checking in each iteration.
-    kwargs = {}
-    for key, value in request.args.items():
-        if key not in ['image', 'model']:
-            kwargs[key] = sanitize(value)
-
-    try:
-        # TODO: run this on a thread. So it doesn't block and we can return the job id.
-        result_image_path = model.run(image_path, **kwargs)
-    except:
-        model.set_error_state()
-        # TODO: Think properly how to handle backend errors.
-        raise
-
-    # TODO: should return the job id for that the execution of the model.
-    return result_image_path
+    return str(model.job_id)
 
 
-# TODO: Figure out a way to return an image given a job id.
 @app.route('/getResult', methods=['GET'])
 def getResult():
     job_id = request.args.get('jid', type=int)

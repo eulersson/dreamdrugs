@@ -5,7 +5,6 @@ import { hot } from 'react-hot-loader';
 import axios from 'axios';
 import './App.css';
 import Progress from './Progress';
-import io from 'socket.io-client';
 
 class App extends React.Component {
   constructor() {
@@ -21,12 +20,6 @@ class App extends React.Component {
     this.buttonClicked = this.buttonClicked.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
     this.snap = this.snap.bind(this);
-
-    // DELETEME
-    console.log("lel");
-    let socket = io();
-    socket.emit("message", "hihi");
-    socket.on("message", msg => console.log(msg));
   }
 
   componentDidMount() {
@@ -85,7 +78,7 @@ class App extends React.Component {
     axios
       .post('/snap', { image: encodedImage })
       .then((res) => {
-        console.log(res.data);
+        console.log(res);
         this.setState({
           impath: res.data.body,
         });

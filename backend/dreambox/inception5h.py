@@ -266,4 +266,4 @@ class Inception5hModel(Model):
         out_path = '/uploads/%s.jpg' % self.job_id
         image_from_array(result).save(out_path)
 
-        return out_path
+        #return out_path
