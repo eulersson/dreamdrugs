@@ -12,6 +12,10 @@ services:
     volumes:
       - image-uploads:/uploads
 
+  database:
+    restart: always
+    build: ./database
+
   nginx:
     restart: always
     build: ./nginx

@@ -1,4 +1,5 @@
-FROM python:slim
+#FROM python:slim
+FROM tensorflow/tensorflow:latest-py3
 MAINTAINER Ramon Blanquer
 WORKDIR /dreambox/backend
 

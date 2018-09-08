@@ -2,5 +2,5 @@ Flask
 Pillow
 gunicorn
 numpy
+redis
 scipy
-tensorflow

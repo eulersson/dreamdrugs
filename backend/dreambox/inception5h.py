@@ -33,20 +33,17 @@ input_tensor_name = "input:0"
 
 
 class Inception5hModel(Model):
-    """Wraps the logic of Google's Inception5h dreaming model into a class.
+    """
+    Wraps the logic of Google's Inception5h dreaming model into a class.
 
     Attributes:
         graph (tf.Graph): Graph to store all the nodes.
         session (tf.Session): Active session throughout the algorithm.
-        progress (int): How much has been done, in percentage, when performing
-            a run. This number gets polled by a thread which spawns when
-            running the model. This number is visible to the frontend through
-            the /progress endpoint. We use the value 999 to tell that am error
-            has ocurred.
     """
+
     def __init__(self):
-        # Queried by a thread to give feedback to the frontend user.
-        self.progress = 0
+        # Call the superclass method that initializes job id.
+        super(Inception5hModel, self).__init__()
 
         # Downloads the model if not existing.
         if not os.path.exists(model_subfolder):
@@ -92,11 +89,12 @@ class Inception5hModel(Model):
         num_iterations,
         step_size
     ):
-        """Runs one iteration on the image pixels where it runs the gradients,
+        """
+        Runs one iteration on the image pixels where it runs the gradients,
         scales them, and adds them to the input image pixels.
 
-        It also updates the percentage as it gets queried at intervals by a
-        thread so we can talk to the frontend through the /progress endpoint.
+        It also updates the percentage and publishes it to redis so it can be
+        fetched from the frontend. They key used is the jobId.
 
         Args:
             image (np.array of float): Input image to dream on.
@@ -133,7 +131,7 @@ class Inception5hModel(Model):
             octaves_completed = current_octave - 1
             iters_completed = octaves_completed * num_iterations + it + 1
             percentage = iters_completed / float(total_num_iters) * 100.0
-            self.progress = percentage
+            self.update_progress(percentage)
 
             log.debug("%d%% | Octave %d/%d | Iteration %d/%d" % (
                 percentage, current_octave, num_octaves, it, num_iterations
@@ -197,14 +195,6 @@ class Inception5hModel(Model):
 
         return img_result
 
-    def reset_progress(self):
-        """Sets back the progress to zero."""
-        self.progress = 0
-
-    def set_error_state(self):
-        """If the frontend polls the progress and sees 999 it will error."""
-        self.progress = 999
-
     def run(
         self,
         impath,
@@ -238,6 +228,9 @@ class Inception5hModel(Model):
                 gradients. What this will do is change the sign of the negative
                 gradients thus achieving different results on the final image.
             step_size (float): A factor to multiply the gradient against.
+
+        Returns:
+            str: Path-like of the resulting image. Carries job id in its name.
         """
         # Sanitize arguments as might come from frontend as strings.
         #blend = float(blend)
@@ -269,7 +262,8 @@ class Inception5hModel(Model):
             step_size=step_size
         )
 
-        out_path = '/uploads/%s.jpg' % (datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
+        #out_path = '/uploads/%s.jpg' % (datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
+        out_path = '/uploads/%s.jpg' % self.job_id
         image_from_array(result).save(out_path)
 
         return out_path

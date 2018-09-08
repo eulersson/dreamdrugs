@@ -16,6 +16,7 @@ def load_image(filename):
     image_array = np.float32(image)
     return image_array
 
+
 def image_from_array(img_arr):
     """Constructs a pillow image from a numpy array.
 
@@ -29,6 +30,7 @@ def image_from_array(img_arr):
     img_arr  = np.uint8(img_arr)
     img = PIL.Image.fromarray(img_arr)
     return img
+
 
 def resize_image(image, size=None, factor=None):
     """For scaling images. A fixed size can be passed or simply a factor which

@@ -1,10 +1,11 @@
-import React from 'react'
-import { hot } from 'react-hot-loader'
+/* global alert, navigator, document, console */
+
+import React from 'react';
+import { hot } from 'react-hot-loader';
 import axios from 'axios';
 import './App.css';
-import Progress from './Progress.js';
-import Loader from 'react-loader';
-
+import Progress from './Progress';
+import io from 'socket.io-client';
 
 class App extends React.Component {
   constructor() {
@@ -13,13 +14,19 @@ class App extends React.Component {
       // Resulting image path returned from the backend.
       impath: '',
       // State defining the moment when image is loading or loaded.
-      snapped: false 
+      snapped: false,
     };
 
     // Method binding.
     this.buttonClicked = this.buttonClicked.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
     this.snap = this.snap.bind(this);
+
+    // DELETEME
+    console.log("lel");
+    let socket = io();
+    socket.emit("message", "hihi");
+    socket.on("message", msg => console.log(msg));
   }
 
   componentDidMount() {
@@ -34,7 +41,7 @@ class App extends React.Component {
 
     if (hasGetUserMedia()) {
       const constraints = {
-        video: true
+        video: true,
       };
       const video = document.querySelector('video');
 
@@ -43,10 +50,11 @@ class App extends React.Component {
       }
 
       function handleError(error) {
-        console.error("Rejected :(", error);
+        console.error('Rejected :(', error);
       }
 
-      navigator.mediaDevices.getUserMedia(constraints)
+      navigator.mediaDevices
+        .getUserMedia(constraints)
         .then(handleSuccess)
         .catch(handleError);
     } else {
@@ -74,11 +82,12 @@ class App extends React.Component {
     canvas.getContext('2d').drawImage(video, 0, 0);
     const encodedImage = canvas.toDataURL('image/jpg');
 
-    axios.post('/snap', {image: encodedImage})
-      .then(res => {
+    axios
+      .post('/snap', { image: encodedImage })
+      .then((res) => {
         console.log(res.data);
         this.setState({
-          impath: res.data.body
+          impath: res.data.body,
         });
       })
       .catch(err => console.error(err));
@@ -88,29 +97,29 @@ class App extends React.Component {
   handleUpload(ev) {
     const data = new FormData();
     data.append('file', ev.target.files[0]);
-    axios.post('/upload', data)
-      .then(res => {
-        if (res.data.status === 500) {
-          console.error(res.data.message); 
-        } else {
-          this.setState({
-            impath: res.data.body,
-            snapped: true
-          });
-        }
-      });
+    axios.post('/upload', data).then((res) => {
+      if (res.data.status === 500) {
+        console.error(res.data.message);
+      } else {
+        this.setState({
+          impath: res.data.body,
+          snapped: true,
+        });
+      }
+    });
   }
 
   render() {
     let buttonText;
     let buttonClasses;
     let result;
+    const jobId = 69; // TODO: Figure out a way to access it from here.
 
     if (this.state.snapped) {
       buttonText = 'Again';
       buttonClasses = 'button again';
       result = (
-        <Progress endpoint="/progress">
+        <Progress jobId={jobId}>
           <img alt="deep" src={this.state.impath} />
         </Progress>
       );
@@ -123,19 +132,22 @@ class App extends React.Component {
     return (
       <div className="App">
         <div id="header">
-          <button
-            className={buttonClasses}
-            onClick={this.buttonClicked}>{buttonText}</button>
+          <button className={buttonClasses} onClick={this.buttonClicked}>
+            {buttonText}
+          </button>
         </div>
         <div id="middle">
-          <canvas style={{display: "none"}}></canvas>
+          <canvas style={{ display: 'none' }} />
           {result}
-          <video style={{display: this.state.snapped ? "none" : "initial"}} autoPlay></video>
+          <video
+            style={{ display: this.state.snapped ? 'none' : 'initial' }}
+            autoPlay
+          />
         </div>
-        <div id="footer"></div>
+        <div id="footer" />
       </div>
-    )
+    );
   }
 }
 
-export default hot(module)(App)
+export default hot(module)(App);
