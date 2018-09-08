@@ -131,6 +131,7 @@ class Inception5hModel(Model):
             octaves_completed = current_octave - 1
             iters_completed = octaves_completed * num_iterations + it + 1
             percentage = iters_completed / float(total_num_iters) * 100.0
+            log.warn(percentage)
             self.update_progress(percentage)
 
             log.debug("%d%% | Octave %d/%d | Iteration %d/%d" % (

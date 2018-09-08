@@ -14,6 +14,8 @@ class App extends React.Component {
       impath: '',
       // State defining the moment when image is loading or loaded.
       snapped: false,
+      // Job ID of the task running on the backend.
+      jid: undefined
     };
 
     // Method binding.
@@ -78,10 +80,12 @@ class App extends React.Component {
     axios
       .post('/snap', { image: encodedImage })
       .then((res) => {
-        console.log(res);
+        console.log(res.data.body);
         this.setState({
-          impath: res.data.body,
+          jid: res.data.body,
         });
+        console.log('just set jidto');
+        console.log(this.state.jid);
       })
       .catch(err => console.error(err));
   }
@@ -106,13 +110,17 @@ class App extends React.Component {
     let buttonText;
     let buttonClasses;
     let result;
-    const jobId = 69; // TODO: Figure out a way to access it from here.
+    // const jobId = 69; // TODO: Figure out a way to access it from here.
 
-    if (this.state.snapped) {
+    if (this.state.snapped && !!this.state.jid) {
+
+      console.log('renderrrr');
+      console.log(this.state.jid);
+
       buttonText = 'Again';
       buttonClasses = 'button again';
       result = (
-        <Progress jobId={jobId}>
+        <Progress jobId={this.state.jid}>
           <img alt="deep" src={this.state.impath} />
         </Progress>
       );

@@ -18,8 +18,6 @@ class Progress extends React.Component {
   }
 
   componentDidMount() {
-    const socket = io();
-    socket.emit('HERE');
     const that = this;
 
     const jobId = `${this.props.jobId}`;

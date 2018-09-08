@@ -21,7 +21,7 @@ let websocket;
 // Describe the callback that reads the progress.
 client.on('message', (chan, msg) => {
   console.log(`Job ${chan} progress: ${msg}% received from redis. Emitting.`);
-  websocket.emit('progress', { jobId: chan, progress: msg });
+  websocket.emit(chan, msg);
   if (msg === '100') {
     console.log(`Task completed. Unsubscribing from ${chan}.`);
     client.unsubscribe(chan);
@@ -55,7 +55,6 @@ if (isDev) {
 
 // In charge to send the image to the backend. Returns a promise.
 // TODO: Move out hardcoded values to client code.
-// TODO: Use POST instead of get.
 function passImageToBackend(imagePath, res) {
   axios
     .post('http://api.dreambox.com/dream', {
@@ -73,6 +72,7 @@ function passImageToBackend(imagePath, res) {
     .then((response) => {
       console.log("Response from api is");
       console.log(response.data);
+      client.subscribe(response.data);
       res.json({
         status: response.status,
         message: 'all good',
