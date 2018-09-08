@@ -4,9 +4,6 @@ import random
 import redis
 r = redis.StrictRedis(host='database')
 
-import logging
-log = logging.getLogger('dreambox')
-
 
 class Model(metaclass=abc.ABCMeta):
     """
@@ -26,9 +23,10 @@ class Model(metaclass=abc.ABCMeta):
         Called from the model to let the frontend know about progress change.
         """
         self.progress = progress
-        log.warn(self.job_id)
-        log.warn(progress)
-        r.publish(str(self.job_id), progress)
+        r.publish(str(self.job_id), int(round(progress, 0)))
+
+    def notify_finished(self):
+        r.publish(str(self.job_id), 'FINISHED')
 
     def set_error_state(self):
         """

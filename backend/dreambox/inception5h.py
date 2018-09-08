@@ -131,7 +131,6 @@ class Inception5hModel(Model):
             octaves_completed = current_octave - 1
             iters_completed = octaves_completed * num_iterations + it + 1
             percentage = iters_completed / float(total_num_iters) * 100.0
-            log.warn(percentage)
             self.update_progress(percentage)
 
             log.debug("%d%% | Octave %d/%d | Iteration %d/%d" % (
@@ -266,5 +265,6 @@ class Inception5hModel(Model):
         #out_path = '/uploads/%s.jpg' % (datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
         out_path = '/uploads/%s.jpg' % self.job_id
         image_from_array(result).save(out_path)
+        self.notify_finished()
 
         #return out_path

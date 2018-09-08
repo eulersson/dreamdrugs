@@ -9,7 +9,6 @@ import io from 'socket.io-client';
 // Hides children until the response from progress reached 100.
 class Progress extends React.Component {
   constructor() {
-    // TODO: Pass in job id as prop and keep it on state or props.
     super();
     this.state = {
       progress: 0,
@@ -27,9 +26,10 @@ class Progress extends React.Component {
       const socket = io();
       socket.on(jobId, (progress) => {
         console.log(`Progress for ${jobId} is ${progress}`);
-        that.setState({ progress });
-        if (progress === 100) {
+        if (progress === 'FINISHED') {
           that.setState({ loaded: true });
+        } else {
+          that.setState({ progress });
         }
       });
       // TODO: Do I need to destroy the socket?
@@ -45,7 +45,7 @@ class Progress extends React.Component {
     return (
       <div className="Progress">
         <div className="percentage">
-          {this.state.progress}
+          {this.state.progress}%
         </div>
       </div>
     );

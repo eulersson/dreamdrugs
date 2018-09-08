@@ -59,11 +59,11 @@ class App extends React.Component {
 
   // Fired when the Snap / Try Again button is clicked.
   buttonClicked() {
-    const snapped = !this.state.snapped;
-    if (snapped) {
+    this.state.snapped = !this.state.snapped;
+    if (this.state.snapped) {
       this.snap();
     } else {
-      this.setState({ impath: '' });
+      this.setState({ jid: '' });
     }
   }
 
@@ -110,7 +110,6 @@ class App extends React.Component {
     let buttonText;
     let buttonClasses;
     let result;
-    // const jobId = 69; // TODO: Figure out a way to access it from here.
 
     if (this.state.snapped && !!this.state.jid) {
 
@@ -121,9 +120,9 @@ class App extends React.Component {
       buttonClasses = 'button again';
       result = (
         <Progress jobId={this.state.jid}>
-          <img alt="deep" src={this.state.impath} />
+          <img alt="deep" src={`/uploads/${this.state.jid}.jpg`} />
         </Progress>
-      );
+      ); // TODO that's super bad and hardcoded. Path needs to be returned from backend/getResult
     } else {
       buttonText = 'Snap';
       buttonClasses = 'button snap';

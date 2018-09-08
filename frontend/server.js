@@ -22,7 +22,7 @@ let websocket;
 client.on('message', (chan, msg) => {
   console.log(`Job ${chan} progress: ${msg}% received from redis. Emitting.`);
   websocket.emit(chan, msg);
-  if (msg === '100') {
+  if (msg === 'FINISHED') {
     console.log(`Task completed. Unsubscribing from ${chan}.`);
     client.unsubscribe(chan);
     websocket.disconnect(chan);
