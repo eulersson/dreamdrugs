@@ -1,3 +1,4 @@
+import json
 import logging
 import math
 import os
@@ -40,31 +41,55 @@ MODELS = {
 @app.route('/dream', methods=['POST'])
 def dream():
     """
-    Loads the passed image, processes it and returns a new one (as path).
+    Feeds an image to one of the available models. To control what model you
+    want to use simply specify it as 'model' in the JSON data object of
+    this POST request. To know which ones to use have a look at the global
+    variable MODELS in this module.
+
+    The image is read from the 'image' property of the POSTed JSON data object.
+
+    The rest of key-values items from the POSTed JSON data it gets fed into the
+    model's run function as keyword arguments. So that way you have access to
+    the parameters of the algorithm a frontend.
     """
     # Data from POST request as JSON.
     data = request.get_json()
+    log.warn(data)
 
-    # Get the model instance.
+    # Get the model instance and image path.
     model = MODELS[data.pop('model')]()
+    input_image_path = data.pop('image')
+
+    def calculate(**kwargs):
+        try:
+            model.run(input_image_path, **data)
+        except Exception as e:
+            model.notify_error(str(e))
 
     # Run on a thread so it does not block.
-    # TODO: Think properly how to handle backend errors.
-    input_image_path = data.pop('image')
-    process = threading.Thread(
-        target=model.run,
-        args=(input_image_path,),
-        kwargs=data
-    )
+    process = threading.Thread(target=calculate)
+
+    # Start dreaming!
     process.start()
 
+    # Returns a handle for the frontend app to keep track of the progress.
     return str(model.job_id)
 
 
 @app.route('/getResult', methods=['GET'])
 def getResult():
+    """
+    Given a job ID it returns the image it generated.
+    """
     job_id = request.args.get('jid', type=int)
     return '/uploads/%s.jpg' % job_id
+
+
+@app.route('/getSignature', methods=['GET'])
+def getSignature():
+    model_name = request.args.get('model', type=str)
+    signature = MODELS[model_name].get_signature()
+    return json.dumps(signature) # TODO: make this return a proper JSON.
 
 
 # TODO: Instead of running this with python, use the flask wrapper script.

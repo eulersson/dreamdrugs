@@ -14,6 +14,7 @@ from scipy.ndimage.filters import gaussian_filter
 
 from dreambox import Model
 from dreambox.utils import load_image, image_from_array, resize_image
+from dreambox.validators import FloatBetween, IntBetween, StringOneOf, IsBoolean, IntOneOf
 
 import logging
 log = logging.getLogger('dreambox')
@@ -195,6 +196,28 @@ class Inception5hModel(Model):
 
         return img_result
 
+    """
+    @Model.signature_info(
+        blend=(0.0, 1.0),
+        depth_level=(1, 10),
+        feature_channel=[None],
+        layer_name=['mixed4a', 'mixed4b'],
+        num_iterations=(1, 60),
+        rescale_factor=(0.1, 0.9),
+        squared=(True, False),
+        step_size=(0.0, 5.0)
+    )
+    """
+    @Model.signature_info(
+        blend=FloatBetween(0.0, 1.0),
+        depth_level=IntBetween(1, 10),
+        feature_channel=IntOneOf([None]),
+        layer_name=StringOneOf(['mixed4a', 'mixed4b']),
+        num_iterations=IntBetween(1, 60),
+        rescale_factor=FloatBetween(0.1, 0.9),
+        squared=IsBoolean(),
+        step_size=FloatBetween(0.0, 5.0)
+    )
     def run(
         self,
         impath,
@@ -232,10 +255,6 @@ class Inception5hModel(Model):
         Returns:
             str: Path-like of the resulting image. Carries job id in its name.
         """
-        # Sanitize arguments as might come from frontend as strings.
-        #blend = float(blend)
-        #depth_level = int(depth_level)
-
         image = load_image(impath)
 
         with self.graph.as_default():
@@ -262,9 +281,7 @@ class Inception5hModel(Model):
             step_size=step_size
         )
 
-        #out_path = '/uploads/%s.jpg' % (datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
         out_path = '/uploads/%s.jpg' % self.job_id
         image_from_array(result).save(out_path)
         self.notify_finished()
 
-        #return out_path
