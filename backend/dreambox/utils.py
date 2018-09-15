@@ -3,9 +3,10 @@ import numpy as np
 
 
 def load_image(filename):
-    """Initializes a numpy array from the image path.
+    """
+    Initializes a numpy array from the image path.
 
-    Args:
+    Arguments:
         filename (str): Path-like to load from.
 
     Returns:
@@ -18,9 +19,10 @@ def load_image(filename):
 
 
 def image_from_array(img_arr):
-    """Constructs a pillow image from a numpy array.
+    """
+    Constructs a pillow image from a numpy array.
 
-    Args:
+    Arguments:
         img_arr (np.array): Image data as an array.
 
     Returns:
@@ -33,11 +35,12 @@ def image_from_array(img_arr):
 
 
 def resize_image(image, size=None, factor=None):
-    """For scaling images. A fixed size can be passed or simply a factor which
-    gets multiplied by both dimensions. If both factor and size are passed they
+    """
+    For scaling images. A fixed size can be passed or simply a factor which gets
+    multiplied by both dimensions. If both factor and size are passed they
     accumulate, that is, the passed size multiplied by the factor will be used.
 
-    Args:
+    Arguments:
         image (np.array): Image data.
         size (tuple of int): Desired size specified as (width, height).
         factor (float): Factor to multiply a size tuple against.

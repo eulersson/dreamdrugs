@@ -1,19 +1,15 @@
 import json
 import logging
-import math
 import os
 import threading
-import time
 
 from flask import Flask, request
 
-from dreambox.inception5h import Inception5hModel
-
+# Create globals based on received environment.
 ADDR = "0.0.0.0"
 PORT = int(os.getenv('FLASKPORT', '4000'))
 DEBUG = bool(int(os.getenv('DEBUG', '1')))
 LEVEL = logging.DEBUG if DEBUG else logging.INFO
-FMT = '%(asctime)s [%(name)s] %(levelname)s - %(module)s.%(funcName)s:%(lineno)s %(message)s'
 
 # Initialize a Flask application.
 app = Flask('dreambox')
@@ -21,16 +17,12 @@ app = Flask('dreambox')
 # Configure flask werkzeug logger.
 app.logger.setLevel(LEVEL)
 
-# Setup dreambox logger with a stream and file handler.
-log = logging.getLogger('dreambox')
-log.setLevel(LEVEL)
-fmt = logging.Formatter(FMT)
-ch = logging.StreamHandler()
-fh = logging.FileHandler('backend.log')
-ch.setFormatter(fmt)
-fh.setFormatter(fmt)
-log.addHandler(ch)
-log.addHandler(fh)
+# Setup 'dreambox' logger.
+from dreambox.logging import setup_logging
+log = setup_logging(LEVEL)
+
+# Import models.
+from dreambox.inception5h import Inception5hModel
 
 # Map for the available models. Keys are what gets passed as URL parameters.
 MODELS = {
@@ -76,8 +68,16 @@ def dream():
     return str(model.job_id)
 
 
-@app.route('/getResult', methods=['GET'])
-def getResult():
+@app.route('/models', methods=['GET'])
+def models():
+    """
+    Returns available models that have implementation.
+    """
+    return json.dumps(MODELS.keys())
+
+
+@app.route('/result', methods=['GET'])
+def result():
     """
     Given a job ID it returns the image it generated.
     """
@@ -85,11 +85,41 @@ def getResult():
     return '/uploads/%s.jpg' % job_id
 
 
-@app.route('/getSignature', methods=['GET'])
-def getSignature():
-    model_name = request.args.get('model', type=str)
-    signature = MODELS[model_name].get_signature()
-    return json.dumps(signature) # TODO: make this return a proper JSON.
+@app.route('/signature/<model>', methods=['GET'])
+def signature(model):
+    """
+    Returns the information and constraints for the parameters of a specific
+    model. That is used to inform the frontend about the parameters the model
+    takes.
+
+    An example of what the data could look like::
+
+        {
+            "layer_name": {
+                "default": "mixed4a",
+                "validation": {
+                    "choices": [
+                        "mixed4a",
+                        "mixed4b"
+                    ],
+                    "type": "str"
+                }
+            },
+            "num_iterations": {
+                "default": 10,
+                "validation": {
+                    "range": [
+                        1,
+                        60
+                    ],
+                    "type": "int"
+                }
+            }
+        }
+
+    """
+    signature = MODELS[model].get_signature()
+    return json.dumps(signature)
 
 
 # TODO: Instead of running this with python, use the flask wrapper script.

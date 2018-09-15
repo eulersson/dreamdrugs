@@ -1,12 +1,7 @@
-import datetime
-import math
 import os
-import random
-import sys
 import urllib
 import zipfile
 
-import PIL
 import numpy as np
 import tensorflow as tf
 
@@ -14,7 +9,9 @@ from scipy.ndimage.filters import gaussian_filter
 
 from dreambox import Model
 from dreambox.utils import load_image, image_from_array, resize_image
-from dreambox.validators import FloatBetween, IntBetween, StringOneOf, IsBoolean, IntOneOf
+from dreambox.validators import (
+    FloatBetween, IntBetween, StringOneOf, IsBoolean, IntOneOf
+)
 
 import logging
 log = logging.getLogger('dreambox')
@@ -39,7 +36,8 @@ class Inception5hModel(Model):
 
     Attributes:
         graph (tf.Graph): Graph to store all the nodes.
-        session (tf.Session): Active session throughout the algorithm.
+        sess (tf.Session): Active session throughout the algorithm.
+        input_image_tensor (tf.Tensor): Where we feed all the image data to.
     """
 
     def __init__(self):
@@ -95,15 +93,15 @@ class Inception5hModel(Model):
         scales them, and adds them to the input image pixels.
 
         It also updates the percentage and publishes it to redis so it can be
-        fetched from the frontend. They key used is the jobId.
+        fetched from the frontend. They key used is the job id.
 
-        Args:
+        Arguments:
             image (np.array of float): Input image to dream on.
             gradient (tf.Tensor): Tensor that computes the gradients.
             current_octave (int): What octave are we in. For progress update.
             num_octaves (int): Total number of octaves. For progress update.
             num_iterations (int): How many times to run gradients and add them.
-            step_size (float): A factor to multiply the gradient against.
+            step_size (float): A factor to multiply the gradient with.
 
         Returns:
             np.array of float: Image array with gradients summed to it.
@@ -112,7 +110,7 @@ class Inception5hModel(Model):
 
         for it in range(num_iterations):
             # Prepare feed dict, run gradients and normalize the result.
-            feed_dict = { self.input_image_tensor: img }
+            feed_dict = {self.input_image_tensor: img}
             g = self.sess.run(gradient, feed_dict=feed_dict)
             g /= (np.std(g) + 1e-8)
 
@@ -151,10 +149,11 @@ class Inception5hModel(Model):
         rescale_factor,
         step_size
     ):
-        """Runs the optimization stepping (adding gradients to the image) at
+        """
+        Runs the optimization stepping (adding gradients to the image) at
         various scales, or octaves.
 
-        Args:
+        Arguments:
             image (np.array of float): Input image to dream on.
             gradient (tf.Tensor): Tensor that computes the gradients.
             blend (float): How much of the previous image (higher octave, larger
@@ -166,7 +165,7 @@ class Inception5hModel(Model):
             rescale_factor (float): What ratio to scale the image in the
                 subsequent octaves. E.g. 0.7 will make it 70% of the higher
                 octave size.
-            step_size (float): A factor to multiply the gradient against.
+            step_size (float): A factor to multiply the gradient with.
         """
         if depth_level > 1:
             sigma = 0.5
@@ -196,23 +195,11 @@ class Inception5hModel(Model):
 
         return img_result
 
-    """
-    @Model.signature_info(
-        blend=(0.0, 1.0),
-        depth_level=(1, 10),
-        feature_channel=[None],
-        layer_name=['mixed4a', 'mixed4b'],
-        num_iterations=(1, 60),
-        rescale_factor=(0.1, 0.9),
-        squared=(True, False),
-        step_size=(0.0, 5.0)
-    )
-    """
-    @Model.signature_info(
+    @Model.accepts(
         blend=FloatBetween(0.0, 1.0),
         depth_level=IntBetween(1, 10),
-        feature_channel=IntOneOf([None]),
-        layer_name=StringOneOf(['mixed4a', 'mixed4b']),
+        feature_channel=IntOneOf(5, 6, 8, optional=True),
+        layer_name=StringOneOf('mixed4a', 'mixed4b'),
         num_iterations=IntBetween(1, 60),
         rescale_factor=FloatBetween(0.1, 0.9),
         squared=IsBoolean(),
@@ -230,11 +217,12 @@ class Inception5hModel(Model):
         squared=True,
         step_size=1.5
     ):
-        """Entry point to the algorithm. This is the method to be run from the
-        endpoint or blueprint. Feed in an image (from a path), and it will dream
+        """
+        Entry point to the algorithm. This is the method to be run from the
+        Flask dream endpoint. Feed in an image (from a path), and it will dream
         on it and generate a resulting one and return it's path.
 
-        Args:
+        Arguments:
             impath (str): Path-like. Input image path.
             blend (float, optional): How much of the previous image (higher
                 octave, larger resolution) to preserve. 1.0 will not preserve
@@ -242,7 +230,7 @@ class Inception5hModel(Model):
             depth_level (int): Number of octaves to recursively dream on.
             feature_channel (int): Isolates just one feature channel on the
                 layer tensor. That is, the right-most dimension is fixed.
-            layer_name (str): blablabla
+            layer_name (str): What image layer to take the gradients from.
             num_iterations (int): How many times to run gradients and add them.
             rescale_factor (float): What ratio to scale the image in the
                 subsequent octaves. E.g. 0.7 will make it 70% of the higher

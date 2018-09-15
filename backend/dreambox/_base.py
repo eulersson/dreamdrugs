@@ -2,11 +2,10 @@ import abc
 import random
 import inspect
 
-import redis
-r = redis.StrictRedis(host='database')
+from dreambox.validators import ValidationError
 
-import logging
-log = logging.getLogger('dreambox')
+import redis
+redis_client = redis.StrictRedis(host='database')
 
 
 class Model(metaclass=abc.ABCMeta):
@@ -15,31 +14,60 @@ class Model(metaclass=abc.ABCMeta):
 
     Attributes:
         progress (int): Percentage of completion for the current computation.
-        job_id (int): Identifier for that particular run task.
+        job_id (int): Identifier for that particular run task. The handle the
+            frontend has in order to retrieve progress updates.
     """
 
     def __init__(self, *args, **kwargs):
         self.progress = 0
         self.job_id = random.randint(0, 999) # TODO: Use sequencial instead.
 
-    # TODO: Make the decorated function preserve docstrings and signature.
     @staticmethod
-    def signature_info(**sig_kw):
+    def accepts(**validators):
+        """
+        Allows keyword argument validation on the Model's run function. That
+        has various advantages:
+
+            * Enforcing arguments of a specific type.
+            * Constraint the possible values of the arguments.
+            * Inform the frontend what kind of data the run function takes so
+              it can expose the right widgets dynamically to interact with it.
+
+        The way you would normally use the accepts decorator is::
+
+            from dreambox.validators import StringOneOf, IntBetween
+            @accepts(name=stringOneOf('dog', 'cat'), age=IntBetween(0, 30))
+            def run(name='dog', age=3):
+                pass
+
+        If one of the arguments can also have a default of None::
+
+            @accepts(age=IntBetween(0, 30, optional=True)
+            def run(age=None):
+                if age is None:
+                    # do stuff
+        """
         def decorator(f):
             run_func_arg_spec = inspect.getfullargspec(f)
             keywords = run_func_arg_spec.args[-len(run_func_arg_spec.defaults):]
             defaults = dict(zip(keywords, run_func_arg_spec.defaults))
 
-            assert set(sig_kw.keys()) == set(keywords), \
+            assert set(validators.keys()) == set(keywords), \
                 "Signature information does not match function's actual " \
-                "signature: %s" % (set(sig_kw.keys()) - set(keywords))
+                "signature: %s" % (set(validators.keys()) - set(keywords))
 
             f.spec = {}
-            for key, value in sig_kw.items():
+            for key, validator in validators.items():
+                try:
+                    validator(defaults[key])
+                except ValidationError as e:
+                    raise ValidationError("{}: {}".format(key, str(e)))
+
                 f.spec[key] = {
                     'default': defaults[key],
-                    'validation': sig_kw[key].to_dict(),
+                    'validation': validators[key].to_json(),
                 }
+
             return f
         return decorator
 
@@ -47,7 +75,7 @@ class Model(metaclass=abc.ABCMeta):
     def get_signature(cls):
         """
         Returns information to the frontend about what parameters the run
-        function accepts, their defaults and ranges.
+        function accepts, their default values, ranges, choices, etc...
         """
         return cls.run.spec
 
@@ -56,19 +84,19 @@ class Model(metaclass=abc.ABCMeta):
         Called from the model to let the frontend know about progress updates.
         """
         self.progress = progress
-        r.publish(str(self.job_id), int(round(progress, 0)))
+        redis_client.publish(str(self.job_id), int(round(progress, 0)))
 
     def notify_error(self, msg):
         """
         Tell all the subscribed clients the computation failed.
         """
-        r.publish(str(self.job_id), 'FAILED %s' % msg)
+        redis_client.publish(str(self.job_id), 'FAILED %s' % msg)
 
     def notify_finished(self):
         """
-        Tell all the subscribed clients the computation finished.
+        Tell all the subscribed clients the computation finished with success.
         """
-        r.publish(str(self.job_id), 'FINISHED')
+        redis_client.publish(str(self.job_id), 'FINISHED')
 
     @abc.abstractmethod
     def run(self, *args, **kwargs):
