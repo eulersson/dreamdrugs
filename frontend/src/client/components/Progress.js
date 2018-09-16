@@ -1,9 +1,7 @@
 import React from 'react';
 import { hot } from 'react-hot-loader';
-// import axios from 'axios'
 import './Progress.css';
 
-// TODO: Import io from socketIO
 import io from 'socket.io-client';
 
 // Hides children until the response from progress reached 100.
@@ -24,7 +22,6 @@ class Progress extends React.Component {
 
     function fetchProgress() {
       const socket = io();
-      console.log('sending hello');
       socket.emit('greet', jobId);
       socket.on(jobId, (progress) => {
         console.log(`Progress for ${jobId} is ${progress}`);
