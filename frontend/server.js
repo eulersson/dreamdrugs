@@ -16,16 +16,16 @@ const http = require('http').Server(app);
 
 const io = require('socket.io')(http);
 
-let websocket;
+let websockets = {};
 
 // Describe the callback that reads the progress.
 client.on('message', (chan, msg) => {
   console.log(`Job ${chan} progress: ${msg}% received from redis. Emitting.`);
-  websocket.emit(chan, msg);
+  websockets[chan].emit(chan, msg);
   if (msg === 'FINISHED') {
     console.log(`Task completed. Unsubscribing from ${chan}.`);
     client.unsubscribe(chan);
-    websocket.disconnect(chan);
+    websockets[chan].disconnect(chan);
   }
 });
 
@@ -117,11 +117,9 @@ app.post('/snap', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log('Someone connected.');
-  websocket = socket;
-  socket.on('message', msg => {
-    console.log("OMG!" + msg)
-    socket.emit('message', `tou said${msg}`)
+  console.log('New connection established. Assigning socket.');
+  socket.on('greet', jobId => {
+    websockets[jobId] = socket;
   });
   socket.on('disconnect', () => console.log('Good bye.'));
 });

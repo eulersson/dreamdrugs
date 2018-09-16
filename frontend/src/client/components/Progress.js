@@ -24,6 +24,8 @@ class Progress extends React.Component {
 
     function fetchProgress() {
       const socket = io();
+      console.log('sending hello');
+      socket.emit('greet', jobId);
       socket.on(jobId, (progress) => {
         console.log(`Progress for ${jobId} is ${progress}`);
         if (progress === 'FINISHED') {
