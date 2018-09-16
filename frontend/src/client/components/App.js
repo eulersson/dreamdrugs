@@ -4,7 +4,9 @@ import React from 'react';
 import { hot } from 'react-hot-loader';
 import axios from 'axios';
 import './App.css';
+
 import Progress from './Progress';
+import Toggle from './Toggle';
 
 class App extends React.Component {
   constructor() {
@@ -15,7 +17,9 @@ class App extends React.Component {
       // State defining the moment when image is loading or loaded.
       snapped: false,
       // Job ID of the task running on the backend.
-      jid: undefined
+      jid: undefined,
+      // Shows the settings for parameter tweaking.
+      showSettings: false
     };
 
     // Method binding.
@@ -38,6 +42,7 @@ class App extends React.Component {
       const constraints = {
         video: true,
       };
+
       const video = document.querySelector('video');
 
       function handleSuccess(stream) {
@@ -53,7 +58,7 @@ class App extends React.Component {
         .then(handleSuccess)
         .catch(handleError);
     } else {
-      alert('Oh, getUserMedia is not available :(');
+      alert('Oh no, getUserMedia is not available :(');
     }
   }
 
@@ -80,12 +85,9 @@ class App extends React.Component {
     axios
       .post('/snap', { image: encodedImage })
       .then((res) => {
-        console.log(res.data.body);
         this.setState({
           jid: res.data.body,
         });
-        console.log('just set jidto');
-        console.log(this.state.jid);
       })
       .catch(err => console.error(err));
   }
@@ -94,7 +96,7 @@ class App extends React.Component {
   handleUpload(ev) {
     const data = new FormData();
     data.append('file', ev.target.files[0]);
-    axios.post('/upload', data).then((res) => {
+    axios.post('/upload', data).then(res => {
       if (res.data.status === 500) {
         console.error(res.data.message);
       } else {
@@ -112,17 +114,13 @@ class App extends React.Component {
     let result;
 
     if (this.state.snapped && !!this.state.jid) {
-
-      console.log('renderrrr');
-      console.log(this.state.jid);
-
       buttonText = 'Again';
       buttonClasses = 'button again';
       result = (
         <Progress jobId={this.state.jid}>
           <img alt="deep" src={`/uploads/${this.state.jid}.jpg`} />
         </Progress>
-      ); // TODO that's super bad and hardcoded. Path needs to be returned from backend/getResult
+      ); // TODO that's super bad and hardcoded. Path needs to be returned from backend/result
     } else {
       buttonText = 'Snap';
       buttonClasses = 'button snap';
@@ -130,11 +128,12 @@ class App extends React.Component {
     }
 
     return (
-      <div className="App">
+      <div id="App">
         <div id="header">
           <button className={buttonClasses} onClick={this.buttonClicked}>
             {buttonText}
           </button>
+          <Toggle></Toggle>
         </div>
         <div id="middle">
           <canvas style={{ display: 'none' }} />

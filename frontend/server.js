@@ -22,7 +22,6 @@ io.on('connection', (socket) => {
     // progress information through it every time redis pulls messages.
     websockets[jobId] = socket;
   });
-  socket.on('disconnect', (a, b) => console.log('Good bye.'+a+b));
 });
 
 // Check if this is a production deploy or development.
@@ -107,6 +106,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage }).single('file');
 
 // When selecting a file from a folder and uploading it.
+// TODO: Request must have in the data object all the parameters for the model.
 app.post('/upload', (req, res) => {
   upload(req, res, (err) => {
     if (err) {
@@ -117,6 +117,7 @@ app.post('/upload', (req, res) => {
 });
 
 // When using the webcam (getting base64 data from canvas).
+// TODO: Request must have in the data object all the parameters for the model.
 app.post('/snap', (req, res) => {
   const base64Data = req.body.image.replace(/^data:image\/png;base64,/, '');
   fs.writeFile('/uploads/out.jpg', base64Data, 'base64', (err) => {
@@ -124,7 +125,6 @@ app.post('/snap', (req, res) => {
   });
   passImageToBackend('/uploads/out.jpg', res);
 });
-
 
 http.listen(3000, () => {
   console.log(`Dreambox app listening! NODE_ENV: ${process.env.NODE_ENV}`)
