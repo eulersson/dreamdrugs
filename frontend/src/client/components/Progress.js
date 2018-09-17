@@ -27,6 +27,7 @@ class Progress extends React.Component {
         console.log(`Progress for ${jobId} is ${progress}`);
         if (progress === 'FINISHED') {
           that.setState({ loaded: true });
+          that.props.onLoaded();
         } else {
           that.setState({ progress });
         }
@@ -41,7 +42,7 @@ class Progress extends React.Component {
       return this.props.children;
     }
     return (
-      <div className="Progress" style={{backgroundColor: `rgba(1,0,0,${this.state.progress / 100}`}}>
+      <div className="Progress" style={{backgroundColor: `rgba(97, 53, 85, ${this.state.progress / 100}`}}>
         <div className="percentage">
           {this.state.progress}%
         </div>

@@ -25,8 +25,6 @@ class App extends React.Component {
       showSettings: false,
       // Whether to show camera view or parameters view.
       showParametersView: false,
-      // Progress of the image that's cooking. Percentage.
-      progress: 0,
       // When the image has finished cooking this becomes true.
       loaded: false
     };
@@ -80,7 +78,7 @@ class App extends React.Component {
       video.pause();
       this.snap(video);
     } else {
-      this.setState({ jid: '' });
+      this.setState({ jid: '', loaded: false });
       video.play();
     }
   }
@@ -125,25 +123,13 @@ class App extends React.Component {
     this.setState({ showParametersView: !this.state.showParametersView })
   }
 
-  fetchProgress(jobId) {
-    const socket = io();
-    socket.emit('greet', jobId);
-    socket.on(jobId, (progress) => {
-      console.log(`Progress for ${jobId} is ${progress}`);
-      if (progress === 'FINISHED') {
-        that.setState({ loaded: true });
-      } else {
-        that.setState({ progress: progress });
-      }
-    });
-
-  }
-
   render() {
     let buttonText;
     let buttonClasses;
     let result;
     let videoClasses;
+
+    console.log(this.state.loaded);
 
     buttonText = 'Snap';
     buttonClasses = 'button snap';
@@ -152,9 +138,8 @@ class App extends React.Component {
       buttonText = 'Again';
       buttonClasses = 'button again';
       videoClasses = 'hide';
-      // TODO: Raise state of Progress to the App.
       result = (
-        <Progress progress={this.state.progress} loaded={this.state.progress} jobId={this.state.jid}>
+        <Progress onLoaded={() => this.setState({loaded: true})} jobId={this.state.jid}>
           <img alt="deep" src={`/uploads/${this.state.jid}.jpg`} />
         </Progress>
       ); // TODO that's super bad and hardcoded. Path needs to be returned from backend/result
@@ -185,6 +170,7 @@ class App extends React.Component {
           <canvas style={{ display: 'none' }} />
           {result}
           <video
+            className={this.state.snapped || this.state.loaded ? 'hide' : ''}
             autoPlay
           />
         </div>
