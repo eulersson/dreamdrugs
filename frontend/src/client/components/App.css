@@ -16,6 +16,20 @@ html, body {
   color: #fff;
   border: none;
   border-radius: 15px;
+  transition: 0.4s;
+}
+
+.show {
+  visibility: visible;
+  opacity: 1;
+}
+.hide {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.button.hide {
+  transform: translateY(-50px);
 }
 
 .button:active {
@@ -56,6 +70,8 @@ html, body {
 }
 
 #App {
+  position: fixed;
+  background-color: black;
 	text-align: center;
 }
 
@@ -69,8 +85,10 @@ html, body {
 
 #middle {
   text-align: center;
-	top: 0;
-	z-index: 1;
+}
+
+video {
+  transition: 2s;
 }
 
 video, img {

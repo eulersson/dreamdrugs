@@ -75,7 +75,7 @@ function passImageToBackend(imagePath, res) {
       depth_level: 2,
       feature_channel: undefined,
       layer_name: 'mixed4b',
-      num_iterations: 10,
+      num_iterations: 20,
       rescale_factor: 0.7,
       squared: true,
       step_size: 1.5,

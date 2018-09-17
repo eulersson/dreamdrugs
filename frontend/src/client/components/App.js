@@ -3,14 +3,17 @@
 import React from 'react';
 import { hot } from 'react-hot-loader';
 import axios from 'axios';
+import io from 'socket.io-client';
+
 import './App.css';
 
 import Progress from './Progress';
+import Parameters from './Parameters';
 import Toggle from './Toggle';
 
 class App extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       // Resulting image path returned from the backend.
       impath: '',
@@ -19,13 +22,20 @@ class App extends React.Component {
       // Job ID of the task running on the backend.
       jid: undefined,
       // Shows the settings for parameter tweaking.
-      showSettings: false
+      showSettings: false,
+      // Whether to show camera view or parameters view.
+      showParametersView: false,
+      // Progress of the image that's cooking. Percentage.
+      progress: 0,
+      // When the image has finished cooking this becomes true.
+      loaded: false
     };
 
     // Method binding.
     this.buttonClicked = this.buttonClicked.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
     this.snap = this.snap.bind(this);
+    this.onToggleParametersViewChange = this.onToggleParametersViewChange.bind(this);
   }
 
   componentDidMount() {
@@ -64,18 +74,20 @@ class App extends React.Component {
 
   // Fired when the Snap / Try Again button is clicked.
   buttonClicked() {
+    const video = document.querySelector('video');
     this.state.snapped = !this.state.snapped;
     if (this.state.snapped) {
-      this.snap();
+      video.pause();
+      this.snap(video);
     } else {
       this.setState({ jid: '' });
+      video.play();
     }
   }
 
   // When using web camera.
-  snap() {
+  snap(video) {
     this.setState({ snapped: true });
-    const video = document.querySelector('video');
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
@@ -108,38 +120,71 @@ class App extends React.Component {
     });
   }
 
+  // Swaps between the camera view and the parameters view.
+  onToggleParametersViewChange() {
+    this.setState({ showParametersView: !this.state.showParametersView })
+  }
+
+  fetchProgress(jobId) {
+    const socket = io();
+    socket.emit('greet', jobId);
+    socket.on(jobId, (progress) => {
+      console.log(`Progress for ${jobId} is ${progress}`);
+      if (progress === 'FINISHED') {
+        that.setState({ loaded: true });
+      } else {
+        that.setState({ progress: progress });
+      }
+    });
+
+  }
+
   render() {
     let buttonText;
     let buttonClasses;
     let result;
+    let videoClasses;
+
+    buttonText = 'Snap';
+    buttonClasses = 'button snap';
 
     if (this.state.snapped && !!this.state.jid) {
       buttonText = 'Again';
       buttonClasses = 'button again';
+      videoClasses = 'hide';
+      // TODO: Raise state of Progress to the App.
       result = (
-        <Progress jobId={this.state.jid}>
+        <Progress progress={this.state.progress} loaded={this.state.progress} jobId={this.state.jid}>
           <img alt="deep" src={`/uploads/${this.state.jid}.jpg`} />
         </Progress>
       ); // TODO that's super bad and hardcoded. Path needs to be returned from backend/result
+    } else if (this.state.showParametersView) {
+      buttonClasses += ' hide';
+      videoClasses = 'hide';
+      result = <Parameters />
     } else {
-      buttonText = 'Snap';
-      buttonClasses = 'button snap';
       result = '';
+      videoClasses = 'show';
     }
 
     return (
       <div id="App">
         <div id="header">
-          <button className={buttonClasses} onClick={this.buttonClicked}>
+          <button
+            className={buttonClasses}
+            onClick={this.buttonClicked}
+          >
             {buttonText}
           </button>
-          <Toggle></Toggle>
+          <Toggle
+            switch={this.state.showParametersView}
+            onChange={this.onToggleParametersViewChange}
+          />
         </div>
         <div id="middle">
           <canvas style={{ display: 'none' }} />
           {result}
           <video
-            style={{ display: this.state.snapped ? 'none' : 'initial' }}
             autoPlay
           />
         </div>

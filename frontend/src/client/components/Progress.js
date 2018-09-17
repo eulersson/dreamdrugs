@@ -31,7 +31,6 @@ class Progress extends React.Component {
           that.setState({ progress });
         }
       });
-      // TODO: Do I need to destroy the socket?
     }
 
     fetchProgress();
@@ -42,7 +41,7 @@ class Progress extends React.Component {
       return this.props.children;
     }
     return (
-      <div className="Progress">
+      <div className="Progress" style={{backgroundColor: `rgba(1,0,0,${this.state.progress / 100}`}}>
         <div className="percentage">
           {this.state.progress}%
         </div>
