@@ -129,7 +129,7 @@ class App extends React.Component {
     let result;
     let videoClasses;
 
-    console.log(this.state.loaded);
+    console.log(this.state.showParametersView);
 
     buttonText = 'Snap';
     buttonClasses = 'button snap';
@@ -144,9 +144,9 @@ class App extends React.Component {
         </Progress>
       ); // TODO that's super bad and hardcoded. Path needs to be returned from backend/result
     } else if (this.state.showParametersView) {
+      result = '';
       buttonClasses += ' hide';
       videoClasses = 'hide';
-      result = <Parameters />
     } else {
       result = '';
       videoClasses = 'show';
@@ -155,10 +155,7 @@ class App extends React.Component {
     return (
       <div id="App">
         <div id="header">
-          <button
-            className={buttonClasses}
-            onClick={this.buttonClicked}
-          >
+          <button className={buttonClasses} onClick={this.buttonClicked}>
             {buttonText}
           </button>
           <Toggle
@@ -168,6 +165,7 @@ class App extends React.Component {
         </div>
         <div id="middle">
           <canvas style={{ display: 'none' }} />
+          {this.state.showParametersView && <Parameters />}
           {result}
           <video
             className={this.state.snapped || this.state.loaded ? 'hide' : ''}
