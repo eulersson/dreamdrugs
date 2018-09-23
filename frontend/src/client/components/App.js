@@ -26,9 +26,15 @@ class App extends React.Component {
       // Whether to show camera view or parameters view.
       showParametersView: false,
       // When the image has finished cooking this becomes true.
-      loaded: false
+      loaded: false,
+      // Available models.
+      models: [],
+      // Currently selected model.
+      model: undefined,
+      // Parameters to run the model with.
+      parameters: {},
     };
-
+    
     // Method binding.
     this.buttonClicked = this.buttonClicked.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
@@ -38,6 +44,11 @@ class App extends React.Component {
 
   componentDidMount() {
     this.initializeCamera();
+    axios.get('/models')
+      .then(res => {
+        this.setState({ models: res.data });
+        this.setState({ model: res.data[0] });
+      })
   }
 
   // Sets up HTML5 features to couple up a canvas with the webcam.
@@ -129,8 +140,6 @@ class App extends React.Component {
     let result;
     let videoClasses;
 
-    console.log(this.state.showParametersView);
-
     buttonText = 'Snap';
     buttonClasses = 'button snap';
 
@@ -165,7 +174,7 @@ class App extends React.Component {
         </div>
         <div id="middle">
           <canvas style={{ display: 'none' }} />
-          {this.state.showParametersView && <Parameters />}
+          {this.state.showParametersView && <Parameters model={this.state.model} models={this.state.models} />}
           {result}
           <video
             className={this.state.snapped || this.state.loaded ? 'hide' : ''}

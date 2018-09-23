@@ -8,7 +8,16 @@ class Parameters extends React.Component {
   }
 
   render() {
-    return <div id="Parameters"></div>
+    let availableModels = this.props.models.map(model => <option key={model} value={model}>{model}</option>) 
+    return (
+      <div id="Parameters">
+        <select>
+          {availableModels}
+        </select>
+
+
+      </div>
+    );
   }
 }
 

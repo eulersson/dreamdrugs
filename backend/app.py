@@ -73,7 +73,7 @@ def models():
     """
     Returns available models that have implementation.
     """
-    return json.dumps(MODELS.keys())
+    return json.dumps(list(MODELS.keys()))
 
 
 @app.route('/result', methods=['GET'])

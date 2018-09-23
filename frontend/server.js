@@ -126,6 +126,12 @@ app.post('/snap', (req, res) => {
   passImageToBackend('/uploads/out.jpg', res);
 });
 
+app.get('/models', (req, res) => {
+  axios.get('http://api.dreambox.com/models')
+    .then(response => res.json(response.data))
+    .catch((err) => console.error(err));
+});
+
 http.listen(3000, () => {
   console.log(`Dreambox app listening! NODE_ENV: ${process.env.NODE_ENV}`)
 });
