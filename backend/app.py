@@ -22,6 +22,7 @@ from dreambox.logging import setup_logging
 log = setup_logging(LEVEL)
 
 # Import models.
+from dreambox import cancel_job, JobCancelled
 from dreambox.inception5h import Inception5hModel
 
 # Map for the available models. Keys are what gets passed as URL parameters.
@@ -55,6 +56,8 @@ def dream():
     def calculate(**kwargs):
         try:
             model.run(input_image_path, **data)
+        except JobCancelled:
+            model.notify_error('Job has been cancelled.')
         except Exception as e:
             model.notify_error(str(e))
 
@@ -76,13 +79,21 @@ def models():
     return json.dumps(list(MODELS.keys()))
 
 
-@app.route('/result', methods=['GET'])
-def result():
+@app.route('/result/<job_id>', methods=['GET'])
+def result(job_id):
     """
     Given a job ID it returns the image it generated.
     """
-    job_id = request.args.get('jid', type=int)
     return '/uploads/%s.jpg' % job_id
+
+
+@app.route('/cancel/<job_id>', methods=['POST'])
+def cancel(job_id):
+    """
+    Cancels a running job.
+    """
+    cancel_job(job_id)
+    return 'success %s' % job_id
 
 
 @app.route('/signature/<model>', methods=['GET'])

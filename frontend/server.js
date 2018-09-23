@@ -132,6 +132,12 @@ app.get('/models', (req, res) => {
     .catch((err) => console.error(err));
 });
 
+app.post('/cancel/:jobId', (req, res) => {
+  axios.post(`http://api.dreambox.com/cancel/${req.param('jobId')}`)
+    .then(response => res.json(response.data))
+    .catch(err => console.error(err));
+});
+
 http.listen(3000, () => {
   console.log(`Dreambox app listening! NODE_ENV: ${process.env.NODE_ENV}`)
 });

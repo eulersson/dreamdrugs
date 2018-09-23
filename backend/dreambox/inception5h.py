@@ -7,7 +7,7 @@ import tensorflow as tf
 
 from scipy.ndimage.filters import gaussian_filter
 
-from dreambox import Model
+from dreambox import Model, cancel_job, JobCancelled
 from dreambox.utils import load_image, image_from_array, resize_image
 from dreambox.validators import (
     FloatBetween, IntBetween, StringOneOf, IsBoolean, IntOneOf
@@ -106,6 +106,9 @@ class Inception5hModel(Model):
         Returns:
             np.array of float: Image array with gradients summed to it.
         """
+        if self.is_cancelled():
+            raise JobCancelled
+
         img = image.copy()
 
         for it in range(num_iterations):

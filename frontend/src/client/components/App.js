@@ -17,8 +17,6 @@ class App extends React.Component {
     this.state = {
       // Resulting image path returned from the backend.
       impath: '',
-      // State defining the moment when image is loading or loaded.
-      snapped: false,
       // Job ID of the task running on the backend.
       jid: undefined,
       // Shows the settings for parameter tweaking.
@@ -26,7 +24,7 @@ class App extends React.Component {
       // Whether to show camera view or parameters view.
       showParametersView: false,
       // When the image has finished cooking this becomes true.
-      loaded: false,
+      dreamt: false,
       // Available models.
       models: [],
       // Currently selected model.
@@ -36,9 +34,10 @@ class App extends React.Component {
     };
     
     // Method binding.
-    this.buttonClicked = this.buttonClicked.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
-    this.snap = this.snap.bind(this);
+    this.onSnap = this.onSnap.bind(this);
+    this.onTryAgain = this.onTryAgain.bind(this);
+    this.onCancel = this.onCancel.bind(this);
     this.onToggleParametersViewChange = this.onToggleParametersViewChange.bind(this);
   }
 
@@ -81,26 +80,13 @@ class App extends React.Component {
     }
   }
 
-  // Fired when the Snap / Try Again button is clicked.
-  buttonClicked() {
-    const video = document.querySelector('video');
-    this.state.snapped = !this.state.snapped;
-    if (this.state.snapped) {
-      video.pause();
-      this.snap(video);
-    } else {
-      this.setState({ jid: '', loaded: false });
-      video.play();
-    }
-  }
-
-  // When using web camera.
-  snap(video) {
-    this.setState({ snapped: true });
+  onSnap() {
+    // TODO: review
+    this.refs.videoRef.pause();
     const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext('2d').drawImage(video, 0, 0);
+    canvas.width = this.refs.videoRef.videoWidth;
+    canvas.height = this.refs.videoRef.videoHeight;
+    canvas.getContext('2d').drawImage(this.refs.videoRef, 0, 0);
     const encodedImage = canvas.toDataURL('image/jpg');
 
     axios
@@ -111,6 +97,22 @@ class App extends React.Component {
         });
       })
       .catch(err => console.error(err));
+
+  }
+
+  onTryAgain() {
+    this.setState({ jid: '', dreamt: false });
+    this.refs.videoRef.play();
+  }
+
+  onCancel() {
+    axios
+      .post(`/cancel/${this.state.jid}`)
+      .then(res => {
+        this.setState({jid: '', dreamt: false});
+        this.refs.videoRef.play();
+        // TODO: make sure the Progress component unsubscribes before it dies.
+      })
   }
 
   // When using file upload dialog.
@@ -121,10 +123,7 @@ class App extends React.Component {
       if (res.data.status === 500) {
         console.error(res.data.message);
       } else {
-        this.setState({
-          impath: res.data.body,
-          snapped: true,
-        });
+        this.setState({impath: res.data.body});
       }
     });
   }
@@ -137,34 +136,43 @@ class App extends React.Component {
   render() {
     let buttonText;
     let buttonClasses;
-    let result;
-    let videoClasses;
+    let buttonCallback;
 
-    buttonText = 'Snap';
-    buttonClasses = 'button snap';
-
-    if (this.state.snapped && !!this.state.jid) {
-      buttonText = 'Again';
-      buttonClasses = 'button again';
-      videoClasses = 'hide';
-      result = (
-        <Progress onLoaded={() => this.setState({loaded: true})} jobId={this.state.jid}>
-          <img alt="deep" src={`/uploads/${this.state.jid}.jpg`} />
-        </Progress>
-      ); // TODO that's super bad and hardcoded. Path needs to be returned from backend/result
-    } else if (this.state.showParametersView) {
-      result = '';
-      buttonClasses += ' hide';
-      videoClasses = 'hide';
+    let mode; // Can be either posing, calculating or dreamt.
+    if (!!this.state.jid) {
+      mode = this.state.dreamt ? 'dreamt' : 'calculating';
     } else {
-      result = '';
-      videoClasses = 'show';
+      mode = 'posing';
+    }
+
+    switch(mode) {
+      case 'posing':
+        buttonText = 'Snap';
+        buttonClasses = 'button snap';
+        buttonCallback = () => this.onSnap();
+        break;
+
+      case 'calculating':
+        buttonText = 'Cancel';
+        buttonClasses = 'button cancel';
+        buttonCallback = () => this.onCancel();
+        break;
+
+      case 'dreamt':
+        buttonText = 'Again';
+        buttonClasses = 'button again';
+        buttonCallback = () => this.onTryAgain();
+        break;
+    }
+
+    if (this.state.showParametersView) {
+      buttonClasses += ' hide';
     }
 
     return (
       <div id="App">
         <div id="header">
-          <button className={buttonClasses} onClick={this.buttonClicked}>
+          <button className={buttonClasses} onClick={buttonCallback}>
             {buttonText}
           </button>
           <Toggle
@@ -174,12 +182,25 @@ class App extends React.Component {
         </div>
         <div id="middle">
           <canvas style={{ display: 'none' }} />
-          {this.state.showParametersView && <Parameters model={this.state.model} models={this.state.models} />}
-          {result}
-          <video
-            className={this.state.snapped || this.state.loaded ? 'hide' : ''}
-            autoPlay
-          />
+          {this.state.showParametersView &&
+              <Parameters model={this.state.model} models={this.state.models} />
+          }
+          {mode !== 'posing' &&
+              <Progress
+                onLoaded={() => this.setState({dreamt: true})}
+                jobId={this.state.jid}
+              >
+                <img alt="deep" src={`/uploads/${this.state.jid}.jpg`} />
+              </Progress>
+          }
+        <video
+          autoPlay
+          ref="videoRef"
+          className={
+            ['dreamt', 'calculating'].includes(mode) ||
+            this.state.showParametersView ? 'hide' : ''
+          }
+        />
         </div>
         <div id="footer" />
       </div>

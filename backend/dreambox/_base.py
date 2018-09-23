@@ -8,6 +8,18 @@ import redis
 redis_client = redis.StrictRedis(host='database')
 
 
+class JobCancelled(Exception):
+    """
+    To be raised when reading CANCEL_{job_id}.
+    """
+
+def cancel_job(job_id):
+    """
+    Sets a flag so from the model itself we can know whether to carry on or not.
+    """
+    redis_client.set('CANCEL_{}'.format(job_id), 1)
+
+
 class Model(metaclass=abc.ABCMeta):
     """
     Base for any kind of computing model that generates images.
@@ -97,6 +109,9 @@ class Model(metaclass=abc.ABCMeta):
         Tell all the subscribed clients the computation finished with success.
         """
         redis_client.publish(str(self.job_id), 'FINISHED')
+
+    def is_cancelled(self):
+        return bool(redis_client.get('CANCEL_{}'.format(self.job_id)))
 
     @abc.abstractmethod
     def run(self, *args, **kwargs):
