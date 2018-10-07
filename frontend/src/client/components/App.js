@@ -25,8 +25,6 @@ class App extends React.Component {
       showParametersView: false,
       // When the image has finished cooking this becomes true.
       dreamt: false,
-      // Available models.
-      models: [],
       // Currently selected model.
       model: undefined,
       // Parameters to run the model with.
@@ -39,15 +37,11 @@ class App extends React.Component {
     this.onTryAgain = this.onTryAgain.bind(this);
     this.onCancel = this.onCancel.bind(this);
     this.onToggleParametersViewChange = this.onToggleParametersViewChange.bind(this);
+    this.setParameters = this.setParameters.bind(this);
   }
 
   componentDidMount() {
     this.initializeCamera();
-    axios.get('/models')
-      .then(res => {
-        this.setState({ models: res.data });
-        this.setState({ model: res.data[0] });
-      })
   }
 
   // Sets up HTML5 features to couple up a canvas with the webcam.
@@ -130,7 +124,12 @@ class App extends React.Component {
 
   // Swaps between the camera view and the parameters view.
   onToggleParametersViewChange() {
-    this.setState({ showParametersView: !this.state.showParametersView })
+    this.setState({ showParametersView: !this.state.showParametersView });
+  }
+
+  setParameters(model, parameters) {
+    this.setState({ model });
+    this.setState({ parameters });
   }
 
   render() {
@@ -183,7 +182,7 @@ class App extends React.Component {
         <div id="middle">
           <canvas style={{ display: 'none' }} />
           {this.state.showParametersView &&
-              <Parameters model={this.state.model} models={this.state.models} />
+              <Parameters setParameters={this.setParameters}/>
           }
           {mode !== 'posing' &&
               <Progress

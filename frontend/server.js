@@ -129,7 +129,13 @@ app.post('/snap', (req, res) => {
 app.get('/models', (req, res) => {
   axios.get('http://api.dreambox.com/models')
     .then(response => res.json(response.data))
-    .catch((err) => console.error(err));
+    .catch(err => console.error(err));
+});
+
+app.get('/signature/:model', (req, res) => {
+  axios.get(`http://api.dreambox.com/signature/${req.param('model')}`)
+    .then(response => res.json(response.data))
+    .catch(err => console.error(err));
 });
 
 app.post('/cancel/:jobId', (req, res) => {
