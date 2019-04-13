@@ -14,7 +14,7 @@ services:
 
   database:
     restart: always
-    build: ./database
+    image: redis:alpine
 
   nginx:
     restart: always
