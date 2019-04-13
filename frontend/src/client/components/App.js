@@ -1,9 +1,9 @@
-/* global alert, navigator, document, console */
+/* global alert, console, document, module, navigator, FormData */
+
+import axios from 'axios';
 
 import React from 'react';
 import { hot } from 'react-hot-loader';
-import axios from 'axios';
-import io from 'socket.io-client';
 
 import './App.css';
 
@@ -11,37 +11,65 @@ import Progress from './Progress';
 import Parameters from './Parameters';
 import Toggle from './Toggle';
 
+
 class App extends React.Component {
+  // TODO: Set prototypes.
+  state = {
+    // Resulting image path returned from the backend.
+    impath: '',
+    // Job ID of the task running on the backend.
+    jid: undefined,
+    // Shows the settings for parameter tweaking.
+    showSettings: false,
+    // Whether to show camera view or parameters view.
+    showParametersView: false,
+    // When the image has finished cooking this becomes true.
+    dreamt: false,
+    // Available models for use.
+    availableModels: [],
+    // Currently selected model.
+    currentModel: undefined,
+    signature: {},
+    // Parameters to run the model with.
+    parameters: {}
+  }
+
   constructor(props) {
     super(props);
-    this.state = {
-      // Resulting image path returned from the backend.
-      impath: '',
-      // Job ID of the task running on the backend.
-      jid: undefined,
-      // Shows the settings for parameter tweaking.
-      showSettings: false,
-      // Whether to show camera view or parameters view.
-      showParametersView: false,
-      // When the image has finished cooking this becomes true.
-      dreamt: false,
-      // Currently selected model.
-      model: undefined,
-      // Parameters to run the model with.
-      parameters: {},
-    };
-    
+
     // Method binding.
     this.handleUpload = this.handleUpload.bind(this);
-    this.onSnap = this.onSnap.bind(this);
-    this.onTryAgain = this.onTryAgain.bind(this);
     this.onCancel = this.onCancel.bind(this);
+    this.onSnap = this.onSnap.bind(this);
     this.onToggleParametersViewChange = this.onToggleParametersViewChange.bind(this);
+    this.onTryAgain = this.onTryAgain.bind(this);
     this.setParameters = this.setParameters.bind(this);
+    this.onModelChanged = this.onModelChanged.bind(this);
   }
 
   componentDidMount() {
     this.initializeCamera();
+    axios.get('/models')
+      .then(res => {
+        this.setState({ availableModels: res.data });
+        this.setState({ currentModel: res.data[0] });
+        this.onModelChanged();
+      });
+
+  }
+
+  onModelChanged() {
+    axios.get(`/signature/${this.state.currentModel}`)
+      .then(res => {
+        console.log(res);
+        this.setState({ signature: res.data });
+        const parameters = {};
+        Object.keys(res.data).forEach(p => parameters[p] = res.data[p].default);
+        if (Object.keys(this.state.parameters).length === 0) {
+          this.setParameters(this.state.currentModel, parameters);
+        }
+      })
+      .catch(err => console.error(err));
   }
 
   // Sets up HTML5 features to couple up a canvas with the webcam.
@@ -74,8 +102,10 @@ class App extends React.Component {
     }
   }
 
+  // Takes a picture and posts it to the server. The job id is returned so we
+  // can retrieve progress udpates via redis.
   onSnap() {
-    // TODO: review
+    // TODO: Review.
     this.refs.videoRef.pause();
     const canvas = document.createElement('canvas');
     canvas.width = this.refs.videoRef.videoWidth;
@@ -84,32 +114,39 @@ class App extends React.Component {
     const encodedImage = canvas.toDataURL('image/jpg');
 
     axios
-      .post('/snap', { image: encodedImage })
+      .post('/snap', {
+        image: encodedImage,
+        parameters: {
+          ...this.state.parameters,
+          model: this.state.currentModel
+        }
+      })
       .then((res) => {
         this.setState({
           jid: res.data.body,
         });
       })
       .catch(err => console.error(err));
-
   }
 
+  // Brings back user to camera mode.
   onTryAgain() {
     this.setState({ jid: '', dreamt: false });
     this.refs.videoRef.play();
   }
 
+  // When a job started it is possible to cancel it.
   onCancel() {
     axios
       .post(`/cancel/${this.state.jid}`)
       .then(res => {
         this.setState({jid: '', dreamt: false});
         this.refs.videoRef.play();
-        // TODO: make sure the Progress component unsubscribes before it dies.
+        // TODO: Make sure the Progress component unsubscribes before it dies.
       })
   }
 
-  // When using file upload dialog.
+  // When using file upload dialog instead of camera.
   handleUpload(ev) {
     const data = new FormData();
     data.append('file', ev.target.files[0]);
@@ -124,12 +161,27 @@ class App extends React.Component {
 
   // Swaps between the camera view and the parameters view.
   onToggleParametersViewChange() {
-    this.setState({ showParametersView: !this.state.showParametersView });
+    if (  // If we need to show parameters and needed state is not initialized:
+      !this.state.showParametersView &&
+      (!this.state.availableModels.length || !!this.state.currentModel))
+    {
+      axios.get('/models')
+        .then(res => {
+          this.setState({ availableModels: res.data });
+          this.setState({ currentModel: res.data[0] });
+          this.setState({ showParametersView: !this.state.showParametersView });
+        })
+    } else {  // Needed state is initialized, parameters can be safely shown:
+      this.setState({ showParametersView: !this.state.showParametersView });
+    }
   }
 
+  // Passed to the Parameters view for state lifting.
   setParameters(model, parameters) {
-    this.setState({ model });
-    this.setState({ parameters });
+    this.setState({
+      currentModel: model,
+      parameters
+    });
   }
 
   render() {
@@ -138,7 +190,7 @@ class App extends React.Component {
     let buttonCallback;
 
     let mode; // Can be either posing, calculating or dreamt.
-    if (!!this.state.jid) {
+    if (this.state.jid) {
       mode = this.state.dreamt ? 'dreamt' : 'calculating';
     } else {
       mode = 'posing';
@@ -168,13 +220,24 @@ class App extends React.Component {
       buttonClasses += ' hide';
     }
 
+    const backgroundColor = this.state.showParametersView ? '#21794d' : '#000';
+
+    const headerStyle = {
+      visibility: this.state.showParametersView ? 'hidden' : 'visible'
+    };
+
+    const toggleStyle = {
+      visibility: this.state.showParametersView ? 'visible' : 'hidden'
+    }
+
     return (
-      <div id="App">
-        <div id="header">
+      <div id="App" style={{ backgroundColor }}>
+        <div id="header" style={headerStyle}>
           <button className={buttonClasses} onClick={buttonCallback}>
             {buttonText}
           </button>
           <Toggle
+            style={toggleStyle}
             switch={this.state.showParametersView}
             onChange={this.onToggleParametersViewChange}
           />
@@ -182,7 +245,12 @@ class App extends React.Component {
         <div id="middle">
           <canvas style={{ display: 'none' }} />
           {this.state.showParametersView &&
-              <Parameters setParameters={this.setParameters}/>
+              <Parameters
+                model={this.state.currentModel}
+                models={this.state.availableModels}
+                signature={this.state.signature}
+                parameters={this.state.parameters}
+                setParameters={this.setParameters}/>
           }
           {mode !== 'posing' &&
               <Progress

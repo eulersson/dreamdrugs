@@ -66,21 +66,10 @@ if (isDev) {
 
 // In charge to send the image to the backend. Returns a promise.
 // TODO: Move out hardcoded values to client code.
-function passImageToBackend(imagePath, res) {
+function passImageToBackend(modelParameters, res) {
   axios
-    .post('http://api.dreambox.com/dream', {
-      model: 'inception5h',
-      image: imagePath,
-      blend: 0.2,
-      depth_level: 2,
-      feature_channel: undefined,
-      layer_name: 'mixed4c',
-      num_iterations: 5,
-      rescale_factor: 0.7,
-      squared: true,
-      step_size: 1.5,
-    })
-    .then((response) => {
+    .post('http://api.dreambox.com/dream', modelParameters)
+    .then(response => {
       client.subscribe(response.data);
       res.json({
         status: response.status,
@@ -119,11 +108,17 @@ app.post('/upload', (req, res) => {
 // When using the webcam (getting base64 data from canvas).
 // TODO: Request must have in the data object all the parameters for the model.
 app.post('/snap', (req, res) => {
-  const base64Data = req.body.image.replace(/^data:image\/png;base64,/, '');
-  fs.writeFile('/uploads/out.jpg', base64Data, 'base64', (err) => {
-    console.error(err);
-  });
-  passImageToBackend('/uploads/out.jpg', res);
+  fs.writeFile(
+    '/uploads/out.jpg',
+    req.body.image.replace(/^data:image\/png;base64,/, ''),
+    'base64',
+    err => console.error(err)
+  );
+  const modelParameters = {
+    ...req.body.parameters,
+    image: '/uploads/out.jpg'
+  };
+  passImageToBackend(modelParameters, res);
 });
 
 app.get('/models', (req, res) => {

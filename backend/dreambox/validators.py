@@ -69,7 +69,7 @@ class _Validator(metaclass=abc.ABCMeta):
         Returns:
             dict: Dictionary to be converted to JSON and sent out to frontend.
         """
-        return {}
+        return { 'optional': self.optional }
 
 
 class _Typed(_Validator, metaclass=abc.ABCMeta):
@@ -97,7 +97,10 @@ class _Typed(_Validator, metaclass=abc.ABCMeta):
         """
         Returns the valid type as the 'type' JSON entry.
         """
-        return {'type': self._type.__name__}
+        return {
+            **super(_Typed, self).to_json(),
+            'type': self._type.__name__
+        }
 
 
 class _Between(_Validator, metaclass=abc.ABCMeta):

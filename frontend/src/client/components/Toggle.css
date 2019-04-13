@@ -12,6 +12,7 @@
   background-color: #369;
 
   transition: 1s;
+  visibility: visible;
 }
 
 #Toggle.toggled {
