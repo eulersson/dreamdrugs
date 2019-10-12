@@ -13,6 +13,7 @@ class JobCancelled(Exception):
     To be raised when reading CANCEL_{job_id}.
     """
 
+
 def cancel_job(job_id):
     """
     Sets a flag so from the model itself we can know whether to carry on or not.
@@ -32,7 +33,7 @@ class Model(metaclass=abc.ABCMeta):
 
     def __init__(self, *args, **kwargs):
         self.progress = 0
-        self.job_id = random.randint(0, 999) # TODO: Use sequencial instead.
+        self.job_id = random.randint(0, 999)  # TODO: Use sequencial instead.
 
     @staticmethod
     def accepts(**validators):

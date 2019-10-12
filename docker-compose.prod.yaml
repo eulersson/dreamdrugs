@@ -2,10 +2,11 @@ version: "3"
 services:
   frontend:
     environment:
-      - NODE_ENV='production'
+      - NODE_ENV=production
 
   backend:
     environment:
+      - ENV=production
       - DEBUG=0
       - FLASKPORT=4000
       - GUNICORNPORT=8000

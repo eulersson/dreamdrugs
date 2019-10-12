@@ -4,12 +4,13 @@ services:
     volumes:
       - ./frontend:/dreambox/frontend
     environment:
-      NODE_ENV: 'development'
+      - NODE_ENV=development
 
   backend:
     volumes:
       - ./backend:/dreambox/backend
     environment:
+      - ENV=development
       - PYTHONUNBUFFERED=1
       - DEBUG=1
       - FLASKPORT=8000

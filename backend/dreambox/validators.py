@@ -21,9 +21,6 @@ decorate it with dreambox.Model.accepts as follows::
 """
 import abc
 
-import logging
-log = logging.getLogger('dreambox')
-
 
 class ValidationError(Exception):
     """
@@ -43,14 +40,21 @@ class _Validator(metaclass=abc.ABCMeta):
     Attributes:
         optional (bool): It will not validate against None.
     """
-    def __init__(self, *args, optional=False):
+
+    def __init__(self, optional=False):
         self.optional = optional
 
     def __call__(self, value):
         """
         Calling the validator object passing a value does the validation.
         """
-        if not self.optional and value is None:
+        # An optional validator is permissive when a None value is passed.
+        if self.optional:
+            if value:
+                self.validate(value)
+
+        # Mandatory validators must always validate.
+        else:
             self.validate(value)
 
     @abc.abstractmethod
@@ -69,7 +73,7 @@ class _Validator(metaclass=abc.ABCMeta):
         Returns:
             dict: Dictionary to be converted to JSON and sent out to frontend.
         """
-        return { 'optional': self.optional }
+        return {'optional': self.optional}
 
 
 class _Typed(_Validator, metaclass=abc.ABCMeta):
@@ -79,6 +83,7 @@ class _Typed(_Validator, metaclass=abc.ABCMeta):
     Attributes:
         _type (type): Object type as would be returned by `type(3)`.
     """
+
     _type = None
 
     def validate(self, value):
@@ -89,18 +94,13 @@ class _Typed(_Validator, metaclass=abc.ABCMeta):
             value (object): Value to check type against.
         """
         if not isinstance(value, self._type):
-            raise ValidationError(
-                "%s is not of type %s" % (value, self._type.__name__)
-            )
+            raise ValidationError("%s is not of type %s" % (value, self._type.__name__))
 
     def to_json(self):
         """
         Returns the valid type as the 'type' JSON entry.
         """
-        return {
-            **super(_Typed, self).to_json(),
-            'type': self._type.__name__
-        }
+        return {**super(_Typed, self).to_json(), 'type': self._type.__name__}
 
 
 class _Between(_Validator, metaclass=abc.ABCMeta):
@@ -111,6 +111,7 @@ class _Between(_Validator, metaclass=abc.ABCMeta):
         min (int): Minimum, lower bound.
         max (int): Maximum, upper bound.
     """
+
     def __init__(self, min, max, **kwargs):
         super(_Between, self).__init__(**kwargs)
         self.min = self._type(min)
@@ -120,7 +121,7 @@ class _Between(_Validator, metaclass=abc.ABCMeta):
         """
         Ensures value is between :attribute:`min` and :attribute:`max`.
         """
-        if (value < self.min or value > self.max):
+        if value < self.min or value > self.max:
             raise ValidationError(
                 "%s must be between %s and %s" % (value, self.min, self.max)
             )
@@ -129,10 +130,7 @@ class _Between(_Validator, metaclass=abc.ABCMeta):
         """
         Returns the valid range as the 'range' property in the JSON object.
         """
-        return {
-            **super(_Between, self).to_json(),
-            'range': [self.min, self.max]
-        }
+        return {**super(_Between, self).to_json(), 'range': [self.min, self.max]}
 
 
 class _OneOf(_Validator, metaclass=abc.ABCMeta):
@@ -143,6 +141,7 @@ class _OneOf(_Validator, metaclass=abc.ABCMeta):
     Attributes:
         allowed (list): Available choices.
     """
+
     def __init__(self, *allowed, **kwargs):
         super(_OneOf, self).__init__(**kwargs)
         self.allowed = allowed
@@ -152,24 +151,20 @@ class _OneOf(_Validator, metaclass=abc.ABCMeta):
         Value needs to be in :attribute:`allowed`.
         """
         if value not in self.allowed:
-            raise ValidationError(
-                "{} is not any of: {}.".format(value, self.allowed)
-            )
+            raise ValidationError("{} is not any of: {}.".format(value, self.allowed))
 
     def to_json(self):
         """
         Returns allowed elements (list) as the 'choices' JSON property.
         """
-        return {
-            **super(_OneOf, self).to_json(),
-            'choices': list(self.allowed)
-        }
+        return {**super(_OneOf, self).to_json(), 'choices': list(self.allowed)}
 
 
 class IsBoolean(_Typed):
     """
     Ensure value is either True or False.
     """
+
     _type = bool
 
 
@@ -181,6 +176,7 @@ class IntBetween(_Between, _Typed):
         min (float): Lower bound.
         max (float): Higher bound.
     """
+
     _type = int
 
 
@@ -193,6 +189,7 @@ class FloatBetween(_Between, _Typed):
         min (float): Lower bound.
         max (float): Higher bound.
     """
+
     _type = float
 
 
@@ -203,6 +200,7 @@ class StringOneOf(_OneOf, _Typed):
     Arguments:
         allowed (list of str): Available strings to choose from.
     """
+
     _type = str
 
 
@@ -213,4 +211,5 @@ class IntOneOf(_OneOf, _Typed):
     Arguments:
         allowed (list of int): Available integer numbers to choose from.
     """
+
     _type = int
