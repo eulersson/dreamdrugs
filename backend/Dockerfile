@@ -1,4 +1,4 @@
-FROM tensorflow/tensorflow:latest-py3
+FROM tensorflow/tensorflow:1.13.2-py3
 
 WORKDIR /dreambox/backend
 
