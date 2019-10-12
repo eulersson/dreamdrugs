@@ -29,7 +29,7 @@ def image_from_array(img_arr):
         PIL.Image: Initialized pillow image.
     """
     img_arr = np.clip(img_arr, 0, 255)
-    img_arr  = np.uint8(img_arr)
+    img_arr = np.uint8(img_arr)
     img = PIL.Image.fromarray(img_arr)
     return img
 

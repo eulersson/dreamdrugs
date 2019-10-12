@@ -18,12 +18,12 @@ app = Flask('dreambox')
 app.logger.setLevel(LEVEL)
 
 # Setup 'dreambox' logger.
-from dreambox.logging import setup_logging
+from dreambox.logging import setup_logging  # noqa: E402
 log = setup_logging(LEVEL)
 
 # Import models.
-from dreambox import cancel_job, JobCancelled
-from dreambox.inception5h import Inception5hModel
+from dreambox import cancel_job, JobCancelled  # noqa: E402
+from dreambox.inception5h import Inception5hModel  # noqa: E402
 
 # Map for the available models. Keys are what gets passed as URL parameters.
 MODELS = {
@@ -136,4 +136,3 @@ def signature(model):
 # TODO: Instead of running this with python, use the flask wrapper script.
 if __name__ == '__main__':
     app.run(debug=DEBUG, host=ADDR, port=PORT)
-

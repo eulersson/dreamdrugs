@@ -1,5 +1,6 @@
 import logging
 
+
 def setup_logging(level):
     """
     Setup dreambox logger with a stream and file handler.
@@ -19,7 +20,7 @@ def setup_logging(level):
     log.setLevel(level)
 
     fmt = logging.Formatter(
-        '%(asctime)s [%(name)s] %(levelname)s - ' \
+        '%(asctime)s [%(name)s] %(levelname)s - '
         '%(module)s.%(funcName)s:%(lineno)s %(message)s'
     )
 
@@ -29,9 +30,7 @@ def setup_logging(level):
     fh = logging.FileHandler('backend.log')
     fh.setFormatter(fmt)
 
-
     log.addHandler(ch)
     log.addHandler(fh)
 
     return log
-

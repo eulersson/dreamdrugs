@@ -10,14 +10,21 @@ from scipy.ndimage.filters import gaussian_filter
 from dreambox import Model, cancel_job, JobCancelled
 from dreambox.utils import load_image, image_from_array, resize_image
 from dreambox.validators import (
-    FloatBetween, IntBetween, StringOneOf, IsBoolean, IntOneOf
+    FloatBetween,
+    IntBetween,
+    StringOneOf,
+    IsBoolean,
+    IntOneOf,
 )
 
 import logging
+
 log = logging.getLogger('dreambox')
 
 # Where to download the model from.
-model_url = 'http://storage.googleapis.com/download.tensorflow.org/models/inception5h.zip'
+model_url = (
+    'http://storage.googleapis.com/download.tensorflow.org/models/inception5h.zip'
+)
 base_name = model_url.split('/')[-1]
 
 # Where to extract it within the application.
@@ -52,10 +59,12 @@ class Inception5hModel(Model):
         if not os.path.exists(unzip_to_folder):
             if not os.path.exists(target_zip_path):
                 # Report download progress. Args: count, block_size, total_size.
-                hook = lambda c, b_s, t_s: log.debug(
-                    "Progress: {:.1%}".format(float(c * b_s) / t_s)
+                def hook(c, b_s, t_s):
+                    log.debug("Progress: {:.1%}".format(float(c * b_s) / t_s))
+
+                file_path, _ = urllib.request.urlretrieve(
+                    model_url, target_zip_path, hook
                 )
-                file_path, _ = urllib.request.urlretrieve(model_url, target_zip_path, hook)
             else:
                 file_path = target_zip_path
 
@@ -73,20 +82,14 @@ class Inception5hModel(Model):
         # Load up the parsed definition into our current graph.
         with self.graph.as_default():
             # We will feed 3-dimensional image data to this tensor in our feed
-            # dicts. However as the trained network understands an array of 
+            # dicts. However as the trained network understands an array of
             # images as input, we expand the dimensions.
             self.input_image_tensor = tf.placeholder(tf.float32, name='input')
             input_tensor = tf.expand_dims(self.input_image_tensor, 0)
             tf.import_graph_def(graph_def, {'input': input_tensor})
 
     def optimize_image(
-        self,
-        image,
-        gradient,
-        current_octave,
-        num_octaves,
-        num_iterations,
-        step_size
+        self, image, gradient, current_octave, num_octaves, num_iterations, step_size
     ):
         """
         Runs one iteration on the image pixels where it runs the gradients,
@@ -115,14 +118,14 @@ class Inception5hModel(Model):
             # Prepare feed dict, run gradients and normalize the result.
             feed_dict = {self.input_image_tensor: img}
             g = self.sess.run(gradient, feed_dict=feed_dict)
-            g /= (np.std(g) + 1e-8)
+            g /= np.std(g) + 1e-8
 
             # Blur the result.
             sigma = (it * 4.0) / num_iterations + 0.5
             grad_smooth1 = gaussian_filter(g, sigma=sigma)
-            grad_smooth2 = gaussian_filter(g, sigma=sigma*2)
-            grad_smooth3 = gaussian_filter(g, sigma=sigma*0.5)
-            g = (grad_smooth1 + grad_smooth2 + grad_smooth3)
+            grad_smooth2 = gaussian_filter(g, sigma=sigma * 2)
+            grad_smooth3 = gaussian_filter(g, sigma=sigma * 0.5)
+            g = grad_smooth1 + grad_smooth2 + grad_smooth3
 
             # Add the scaled gradients to the image.
             step_size_scaled = step_size / (np.std(g) + 1e-8)
@@ -135,9 +138,10 @@ class Inception5hModel(Model):
             percentage = iters_completed / float(total_num_iters) * 100.0
             self.update_progress(percentage)
 
-            log.debug("%d%% | Octave %d/%d | Iteration %d/%d" % (
-                percentage, current_octave, num_octaves, it, num_iterations
-            ))
+            log.debug(
+                "%d%% | Octave %d/%d | Iteration %d/%d"
+                % (percentage, current_octave, num_octaves, it, num_iterations)
+            )
 
         return img
 
@@ -150,7 +154,7 @@ class Inception5hModel(Model):
         total_depth,
         num_iterations,
         rescale_factor,
-        step_size
+        step_size,
     ):
         """
         Runs the optimization stepping (adding gradients to the image) at
@@ -178,13 +182,15 @@ class Inception5hModel(Model):
                 img_downscaled,
                 gradient,
                 blend=blend,
-                depth_level=depth_level-1,
+                depth_level=depth_level - 1,
                 total_depth=total_depth,
                 num_iterations=num_iterations,
                 rescale_factor=rescale_factor,
-                step_size=step_size
+                step_size=step_size,
             )
-            img_upscaled = resize_image(img_result, size=(image.shape[1],image.shape[0]))
+            img_upscaled = resize_image(
+                img_result, size=(image.shape[1], image.shape[0])
+            )
             image = blend * image + (1 - blend) * img_upscaled
 
         img_result = self.optimize_image(
@@ -193,7 +199,7 @@ class Inception5hModel(Model):
             depth_level,
             total_depth,
             num_iterations=num_iterations,
-            step_size=step_size
+            step_size=step_size,
         )
 
         return img_result
@@ -206,7 +212,7 @@ class Inception5hModel(Model):
         num_iterations=IntBetween(1, 60),
         rescale_factor=FloatBetween(0.1, 0.9),
         squared=IsBoolean(),
-        step_size=FloatBetween(0.0, 5.0)
+        step_size=FloatBetween(0.0, 5.0),
     )
     def run(
         self,
@@ -218,7 +224,7 @@ class Inception5hModel(Model):
         num_iterations=10,
         rescale_factor=0.7,
         squared=True,
-        step_size=1.5
+        step_size=1.5,
     ):
         """
         Entry point to the algorithm. This is the method to be run from the
@@ -269,10 +275,9 @@ class Inception5hModel(Model):
             rescale_factor=rescale_factor,
             blend=blend,
             num_iterations=num_iterations,
-            step_size=step_size
+            step_size=step_size,
         )
 
         out_path = '/uploads/%s.jpg' % self.job_id
         image_from_array(result).save(out_path)
         self.notify_finished()
-
