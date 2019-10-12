@@ -73,8 +73,15 @@ def test_optional_validator():
     """
     optional_validator = TrackCalledValidator(optional=True)
     assert optional_validator.to_json() == {"optional": True}
+
+    # It's OK if we pass a None, it won't error.
     optional_validator(None)
     assert optional_validator.validate_called == False
+
+    # It also can validate if you pass something that isn't 'None'.
+    optional_validator(12)
+    assert optional_validator.validate_called == True
+
 
 
 def test_typed_validator():
