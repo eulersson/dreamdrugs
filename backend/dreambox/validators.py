@@ -94,7 +94,9 @@ class _Typed(_Validator, metaclass=abc.ABCMeta):
             value (object): Value to check type against.
         """
         if not isinstance(value, self._type):
-            raise ValidationError("%s is not of type %s" % (value, self._type.__name__))
+            raise ValidationError(
+                "%s is not of type '%s'" % (value, self._type.__name__)
+            )
 
     def to_json(self):
         """
@@ -151,7 +153,7 @@ class _OneOf(_Validator, metaclass=abc.ABCMeta):
         Value needs to be in :attribute:`allowed`.
         """
         if value not in self.allowed:
-            raise ValidationError("{} is not any of: {}.".format(value, self.allowed))
+            raise ValidationError("{} is not any of: {}".format(value, self.allowed))
 
     def to_json(self):
         """
