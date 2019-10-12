@@ -8,4 +8,7 @@ services:
 before_script: pip install docker-compose
 
 script:
-  - docker-compose run backend sh -c "pytest && flake8"
+  - docker-compose run backend sh -c "pytest --cov-report=xml --cov=dreambox && flake8"
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
