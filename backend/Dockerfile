@@ -2,8 +2,11 @@ FROM tensorflow/tensorflow:latest-py3
 
 WORKDIR /dreambox/backend
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY poetry.lock pyproject.toml ./
+
+RUN pip install poetry \
+ && poetry config settings.virtualenvs.create false \
+ && poetry install $(test "$ENV" = "production" && echo "--no-dev") --no-interaction
 
 COPY . .
 
