@@ -1,1 +1,1 @@
-from dreambox._base import Model, cancel_job, JobCancelled
+from dreambox._base import Model, cancel_job, JobCancelled  # noqa: F401

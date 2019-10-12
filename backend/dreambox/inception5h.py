@@ -7,7 +7,7 @@ import tensorflow as tf
 
 from scipy.ndimage.filters import gaussian_filter
 
-from dreambox import Model, cancel_job, JobCancelled
+from dreambox import Model, JobCancelled
 from dreambox.utils import load_image, image_from_array, resize_image
 from dreambox.validators import (
     FloatBetween,
