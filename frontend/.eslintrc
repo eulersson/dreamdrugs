@@ -10,9 +10,14 @@
         }
     },
     "plugins": [
+        "jest",
         "react"
     ],
-    "extends": ["eslint:recommended", "plugin:react/recommended"],
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:jest/recommended"
+    ],
     "rules": {
         "comma-dangle": 0,
         "react/jsx-uses-vars": 1,
