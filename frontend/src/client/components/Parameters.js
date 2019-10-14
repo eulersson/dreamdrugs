@@ -5,10 +5,10 @@ import { hot } from "react-hot-loader";
 
 import "./Parameters.css";
 
-import Checkbox from "./Checkbox.js";
-import Dropdown from "./Dropdown.js";
-import Slider from "./Slider.js";
-import TextInput from "./TextInput.js";
+import Checkbox from "./Checkbox";
+import Dropdown from "./Dropdown";
+import Slider from "./Slider";
+import TextInput from "./TextInput";
 
 class Parameters extends React.Component {
   onValueChanged = (parameterName, newValue, type) => {
