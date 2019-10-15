@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = {
+  mode: 'development',
   entry: [
     'webpack-hot-middleware/client',
     './src/client'
@@ -17,7 +18,6 @@ module.exports = {
       {
         test: /\.jsx?$/,
         loaders: 'babel-loader',
-        include: __dirname,
         exclude: /node_modules/
       },
       {
@@ -28,12 +28,9 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/server/views/index.html',
-      filename: 'index.html',
-      inject: 'body'
+      template: 'src/server/views/index.html',
     }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin()
-  ],
-  mode: 'development'
+  ]
 };

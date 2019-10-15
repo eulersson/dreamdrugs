@@ -50,15 +50,9 @@ app.use(express.urlencoded({ extended: true }));
 if (isDev) {
   const webpack = require("webpack");
   const webpackConfig = require("./webpack.config");
-  const webpackMiddleware = require("webpack-dev-middleware");
-  const webpackHotMiddleware = require("webpack-hot-middleware");
-
   const webpackCompiler = webpack(webpackConfig);
-  const wpmw = webpackMiddleware(webpackCompiler, {});
-  app.use(wpmw);
-
-  const wphmw = webpackHotMiddleware(webpackCompiler);
-  app.use(wphmw);
+  app.use(require("webpack-dev-middleware")(webpackCompiler, {}));
+  app.use(require("webpack-hot-middleware")(webpackCompiler));
 } else {
   app.use(express.static("dist"));
 }

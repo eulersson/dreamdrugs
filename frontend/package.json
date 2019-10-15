@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "webpack --config webpack.production.config --optimize-minimize && node server.js",
+    "start": "webpack --config webpack.production.config && node server.js",
     "dev": "nodemon --ignore src/client/ --ignore dist/ server.js",
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "test:watch": "jest --watchAll",
-    "test:snapshot": "jest --updateSnapshot",
-    "test:coverage": "jest --coverage --colors"
+    "test:snapshot": "jest --updateSnapshot"
   },
   "dependencies": {
     "axios": "^0.19.0",
