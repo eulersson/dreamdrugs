@@ -3,6 +3,7 @@ services:
   frontend:
     volumes:
       - ./frontend:/dreambox/frontend
+      - /dreambox/frontend/node_modules
     environment:
       - NODE_ENV=development
 
