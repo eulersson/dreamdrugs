@@ -9,11 +9,9 @@ before_script: pip install docker-compose
 
 script:
   # Run backend tests (Python) and upload coverage.
-  - docker-compose run backend sh -c "pytest --cov=dreambox && flake8"
+  - docker-compose run backend sh -c "pytest --cov=dreambox --cov-report xml && flake8"
   - bash <(curl -s https://codecov.io/bash) -cF python
 
   # Run frontend tests (JavaScript) and upload coverage.
   - docker-compose run frontend sh -c "yarn test:coverage"
-  - echo $TRAVIS_BUILD_DIR
-  - sudo chown travis:travis $TRAVIS_BUILD_DIR/frontend/coverage/coverage-final.json
   - bash <(curl -s https://codecov.io/bash) -cF javascript
