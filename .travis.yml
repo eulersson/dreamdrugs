@@ -9,7 +9,7 @@ before_script: pip install docker-compose
 
 script:
   # Run backend tests (Python) and upload coverage.
-  - docker-compose run backend $(bash <(curl -s https://codecov.io/env)) sh -c 'pytest --cov=dreambox --cov-report xml && codecov'
+  - docker-compose run backend sh -c "pytest --cov=dreambox --cov-report xml && bash <(curl -s https://codecov.io/bash) -cF python"
 
   # Run frontend tests (JavaScript) and upload coverage.
-  - docker-compose run frontend $(bash <(curl -s https://codecov.io/env)) sh -c 'yarn test:coverage && codecov'
+  - docker-compose run frontend sh -c "yarn test:coverage && bash <(curl -s https://codecov.io/bash) -cF javascript"
