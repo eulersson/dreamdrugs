@@ -12,4 +12,4 @@ script:
   - docker-compose run backend pytest --cov=dreambox --cov-report xml && bash -c 'bash <(curl -s https://codecov.io/bash) -cF python'
 
   # Run frontend tests (JavaScript) and upload coverage.
-  - docker-compose run frontend yarn test:coverage && bash -c 'bash <(curl -s https://codecov.io/bash) -cF javascript'
+  - docker-compose run frontend yarn test:coverage && ls -lahtr . && ls -lahtr ./frontend && ls -lahtr ./frontend/coverage && bash -c 'bash <(curl -s https://codecov.io/bash) -cF javascript'
