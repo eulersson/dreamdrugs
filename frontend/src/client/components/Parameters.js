@@ -1,7 +1,4 @@
-/* global console, module */
-
 import React from "react";
-import { hot } from "react-hot-loader";
 
 import "./Parameters.css";
 
@@ -106,4 +103,4 @@ class Parameters extends React.Component {
   }
 }
 
-export default hot(module)(Parameters);
+export default Parameters;

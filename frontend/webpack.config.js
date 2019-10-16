@@ -6,6 +6,7 @@ module.exports = {
   mode: 'development',
   entry: [
     'webpack-hot-middleware/client',
+    'react-hot-loader/patch',
     './src/client'
   ],
   devtool: 'inline-source-map',

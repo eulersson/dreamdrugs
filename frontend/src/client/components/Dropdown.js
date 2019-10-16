@@ -1,21 +1,9 @@
-/* global module */
-
 import React from "react";
 import PropTypes from "prop-types";
-import { hot } from "react-hot-loader";
 
 import "./Dropdown.css";
 
 class Dropdown extends React.Component {
-  static propTypes = {
-    choices: PropTypes.array,
-    initial: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    name: PropTypes.string,
-    onChange: PropTypes.func,
-    optional: PropTypes.bool,
-    prettyName: PropTypes.string
-  };
-
   state = {
     active: false,
     current: ""
@@ -27,7 +15,9 @@ class Dropdown extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({ current: this.props.initial === null ? "None" : this.props.initial });
+    this.setState({
+      current: this.props.initial === null ? "None" : this.props.initial
+    });
     console.log(this.state);
     console.log(this.props.initial);
   }
@@ -64,4 +54,13 @@ class Dropdown extends React.Component {
   }
 }
 
-export default hot(module)(Dropdown);
+Dropdown.propTypes = {
+  choices: PropTypes.array,
+  initial: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  name: PropTypes.string,
+  onChange: PropTypes.func,
+  optional: PropTypes.bool,
+  prettyName: PropTypes.string
+};
+
+export default Dropdown;

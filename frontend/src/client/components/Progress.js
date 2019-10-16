@@ -1,23 +1,21 @@
-/* global console, module */
+import io from "socket.io-client";
 
 import React from "react";
-import PropTypes from 'prop-types';
-import { hot } from "react-hot-loader";
-import "./Progress.css";
+import PropTypes from "prop-types";
 
-import io from "socket.io-client";
+import "./Progress.css";
 
 // Hides children until the response from progress reached 100.
 class Progress extends React.Component {
   state = {
     progress: 0,
     loaded: false
-  }
+  };
 
   propTypes = {
     jobId: PropTypes.number.isRequired,
     onLoaded: PropTypes.func.isRequired
-  }
+  };
 
   componentDidMount() {
     const jobId = `${this.props.jobId}`;
@@ -44,7 +42,7 @@ class Progress extends React.Component {
 
   render() {
     return this.state.loaded ? (
-      this.props.children  /* eslint-disable-line react/prop-types */ 
+      this.props.children /* eslint-disable-line react/prop-types */
     ) : (
       <div
         className="Progress"
@@ -58,4 +56,4 @@ class Progress extends React.Component {
   }
 }
 
-export default hot(module)(Progress);
+export default Progress;

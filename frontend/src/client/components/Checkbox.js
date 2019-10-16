@@ -1,17 +1,21 @@
-/* global module */
-
 import React from "react";
-import { hot } from "react-hot-loader";
+import PropTypes from "prop-types";
 
 import "./Checkbox.css";
 
 function Checkbox(props) {
   return (
-    <label className="container">{props.prettyName}
+    <label className="container">
+      {props.prettyName}
       <input name={props.name} type="checkbox" />
       <span className="checkmark"></span>
     </label>
   );
 }
 
-export default hot(module)(Checkbox);
+Checkbox.propTypes = {
+  name: PropTypes.string,
+  prettyName: PropTypes.string
+};
+
+export default Checkbox;

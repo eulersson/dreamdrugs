@@ -1,22 +1,20 @@
-/* global alert, console, document, module, navigator, FormData */
+import axios from "axios";
 
-import axios from 'axios';
+import { hot } from "react-hot-loader/root";
 
-import React from 'react';
-import { hot } from 'react-hot-loader';
+import React from "react";
 
-import './App.css';
+import Progress from "./Progress";
+import Parameters from "./Parameters";
+import Toggle from "./Toggle";
 
-import Progress from './Progress';
-import Parameters from './Parameters';
-import Toggle from './Toggle';
-
+import "./App.css";
 
 class App extends React.Component {
   // TODO: Set prototypes.
   state = {
     // Resulting image path returned from the backend.
-    impath: '',
+    impath: "",
     // Job ID of the task running on the backend.
     jid: undefined,
     // Shows the settings for parameter tweaking.
@@ -32,7 +30,7 @@ class App extends React.Component {
     signature: {},
     // Parameters to run the model with.
     parameters: {}
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -41,7 +39,9 @@ class App extends React.Component {
     this.handleUpload = this.handleUpload.bind(this);
     this.onCancel = this.onCancel.bind(this);
     this.onSnap = this.onSnap.bind(this);
-    this.onToggleParametersViewChange = this.onToggleParametersViewChange.bind(this);
+    this.onToggleParametersViewChange = this.onToggleParametersViewChange.bind(
+      this
+    );
     this.onTryAgain = this.onTryAgain.bind(this);
     this.setParameters = this.setParameters.bind(this);
     this.onModelChanged = this.onModelChanged.bind(this);
@@ -49,22 +49,23 @@ class App extends React.Component {
 
   componentDidMount() {
     this.initializeCamera();
-    axios.get('/models')
-      .then(res => {
-        this.setState({ availableModels: res.data });
-        this.setState({ currentModel: res.data[0] });
-        this.onModelChanged();
-      });
-
+    axios.get("/models").then(res => {
+      this.setState({ availableModels: res.data });
+      this.setState({ currentModel: res.data[0] });
+      this.onModelChanged();
+    });
   }
 
   onModelChanged() {
-    axios.get(`/signature/${this.state.currentModel}`)
+    axios
+      .get(`/signature/${this.state.currentModel}`)
       .then(res => {
         console.log(res);
         this.setState({ signature: res.data });
         const parameters = {};
-        Object.keys(res.data).forEach(p => parameters[p] = res.data[p].default);
+        Object.keys(res.data).forEach(
+          p => (parameters[p] = res.data[p].default)
+        );
         if (Object.keys(this.state.parameters).length === 0) {
           this.setParameters(this.state.currentModel, parameters);
         }
@@ -80,17 +81,17 @@ class App extends React.Component {
 
     if (hasGetUserMedia()) {
       const constraints = {
-        video: true,
+        video: true
       };
 
-      const video = document.querySelector('video');
+      const video = document.querySelector("video");
 
       function handleSuccess(stream) {
         video.srcObject = stream;
       }
 
       function handleError(error) {
-        console.error('Rejected :(', error);
+        console.error("Rejected :(", error);
       }
 
       navigator.mediaDevices
@@ -98,7 +99,7 @@ class App extends React.Component {
         .then(handleSuccess)
         .catch(handleError);
     } else {
-      alert('Oh no, getUserMedia is not available :(');
+      alert("Oh no, getUserMedia is not available :(");
     }
   }
 
@@ -107,23 +108,23 @@ class App extends React.Component {
   onSnap() {
     // TODO: Review.
     this.refs.videoRef.pause();
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     canvas.width = this.refs.videoRef.videoWidth;
     canvas.height = this.refs.videoRef.videoHeight;
-    canvas.getContext('2d').drawImage(this.refs.videoRef, 0, 0);
-    const encodedImage = canvas.toDataURL('image/jpg');
+    canvas.getContext("2d").drawImage(this.refs.videoRef, 0, 0);
+    const encodedImage = canvas.toDataURL("image/jpg");
 
     axios
-      .post('/snap', {
+      .post("/snap", {
         image: encodedImage,
         parameters: {
           ...this.state.parameters,
           model: this.state.currentModel
         }
       })
-      .then((res) => {
+      .then(res => {
         this.setState({
-          jid: res.data.body,
+          jid: res.data.body
         });
       })
       .catch(err => console.error(err));
@@ -131,47 +132,46 @@ class App extends React.Component {
 
   // Brings back user to camera mode.
   onTryAgain() {
-    this.setState({ jid: '', dreamt: false });
+    this.setState({ jid: "", dreamt: false });
     this.refs.videoRef.play();
   }
 
   // When a job started it is possible to cancel it.
   onCancel() {
-    axios
-      .post(`/cancel/${this.state.jid}`)
-      .then(res => {
-        this.setState({jid: '', dreamt: false});
-        this.refs.videoRef.play();
-        // TODO: Make sure the Progress component unsubscribes before it dies.
-      })
+    axios.post(`/cancel/${this.state.jid}`).then(res => {
+      this.setState({ jid: "", dreamt: false });
+      this.refs.videoRef.play();
+      // TODO: Make sure the Progress component unsubscribes before it dies.
+    });
   }
 
   // When using file upload dialog instead of camera.
   handleUpload(ev) {
     const data = new FormData();
-    data.append('file', ev.target.files[0]);
-    axios.post('/upload', data).then(res => {
+    data.append("file", ev.target.files[0]);
+    axios.post("/upload", data).then(res => {
       if (res.data.status === 500) {
         console.error(res.data.message);
       } else {
-        this.setState({impath: res.data.body});
+        this.setState({ impath: res.data.body });
       }
     });
   }
 
   // Swaps between the camera view and the parameters view.
   onToggleParametersViewChange() {
-    if (  // If we need to show parameters and needed state is not initialized:
+    if (
+      // If we need to show parameters and needed state is not initialized:
       !this.state.showParametersView &&
-      (!this.state.availableModels.length || !!this.state.currentModel))
-    {
-      axios.get('/models')
-        .then(res => {
-          this.setState({ availableModels: res.data });
-          this.setState({ currentModel: res.data[0] });
-          this.setState({ showParametersView: !this.state.showParametersView });
-        })
-    } else {  // Needed state is initialized, parameters can be safely shown:
+      (!this.state.availableModels.length || !!this.state.currentModel)
+    ) {
+      axios.get("/models").then(res => {
+        this.setState({ availableModels: res.data });
+        this.setState({ currentModel: res.data[0] });
+        this.setState({ showParametersView: !this.state.showParametersView });
+      });
+    } else {
+      // Needed state is initialized, parameters can be safely shown:
       this.setState({ showParametersView: !this.state.showParametersView });
     }
   }
@@ -191,44 +191,44 @@ class App extends React.Component {
 
     let mode; // Can be either posing, calculating or dreamt.
     if (this.state.jid) {
-      mode = this.state.dreamt ? 'dreamt' : 'calculating';
+      mode = this.state.dreamt ? "dreamt" : "calculating";
     } else {
-      mode = 'posing';
+      mode = "posing";
     }
 
-    switch(mode) {
-      case 'posing':
-        buttonText = 'Snap';
-        buttonClasses = 'button snap';
+    switch (mode) {
+      case "posing":
+        buttonText = "Snap";
+        buttonClasses = "button snap";
         buttonCallback = () => this.onSnap();
         break;
 
-      case 'calculating':
-        buttonText = 'Cancel';
-        buttonClasses = 'button cancel';
+      case "calculating":
+        buttonText = "Cancel";
+        buttonClasses = "button cancel";
         buttonCallback = () => this.onCancel();
         break;
 
-      case 'dreamt':
-        buttonText = 'Again';
-        buttonClasses = 'button again';
+      case "dreamt":
+        buttonText = "Again";
+        buttonClasses = "button again";
         buttonCallback = () => this.onTryAgain();
         break;
     }
 
     if (this.state.showParametersView) {
-      buttonClasses += ' hide';
+      buttonClasses += " hide";
     }
 
-    const backgroundColor = this.state.showParametersView ? '#21794d' : '#000';
+    const backgroundColor = this.state.showParametersView ? "#21794d" : "#000";
 
     const headerStyle = {
-      visibility: this.state.showParametersView ? 'hidden' : 'visible'
+      visibility: this.state.showParametersView ? "hidden" : "visible"
     };
 
     const toggleStyle = {
-      visibility: this.state.showParametersView ? 'visible' : 'hidden'
-    }
+      visibility: this.state.showParametersView ? "visible" : "hidden"
+    };
 
     return (
       <div id="App" style={{ backgroundColor }}>
@@ -243,31 +243,34 @@ class App extends React.Component {
           />
         </div>
         <div id="middle">
-          <canvas style={{ display: 'none' }} />
-          {this.state.showParametersView &&
-              <Parameters
-                model={this.state.currentModel}
-                models={this.state.availableModels}
-                signature={this.state.signature}
-                parameters={this.state.parameters}
-                setParameters={this.setParameters}/>
-          }
-          {mode !== 'posing' &&
-              <Progress
-                onLoaded={() => this.setState({dreamt: true})}
-                jobId={this.state.jid}
-              >
-                <img alt="deep" src={`/uploads/${this.state.jid}.jpg`} />
-              </Progress>
-          }
-        <video
-          autoPlay
-          ref="videoRef"
-          className={
-            ['dreamt', 'calculating'].includes(mode) ||
-            this.state.showParametersView ? 'hide' : ''
-          }
-        />
+          <canvas style={{ display: "none" }} />
+          {this.state.showParametersView && (
+            <Parameters
+              model={this.state.currentModel}
+              models={this.state.availableModels}
+              signature={this.state.signature}
+              parameters={this.state.parameters}
+              setParameters={this.setParameters}
+            />
+          )}
+          {mode !== "posing" && (
+            <Progress
+              onLoaded={() => this.setState({ dreamt: true })}
+              jobId={this.state.jid}
+            >
+              <img alt="deep" src={`/uploads/${this.state.jid}.jpg`} />
+            </Progress>
+          )}
+          <video
+            autoPlay
+            ref="videoRef"
+            className={
+              ["dreamt", "calculating"].includes(mode) ||
+              this.state.showParametersView
+                ? "hide"
+                : ""
+            }
+          />
         </div>
         <div id="footer" />
       </div>
@@ -275,4 +278,4 @@ class App extends React.Component {
   }
 }
 
-export default hot(module)(App);
+export default hot(App);

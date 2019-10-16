@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`toggle renders correctly 1`] = `
+<div
+  className="toggled"
+  id="Toggle"
+>
+  <div
+    id="bar1"
+  />
+  <div
+    id="bar2"
+  />
+  <div
+    id="bar3"
+  />
+</div>
+`;

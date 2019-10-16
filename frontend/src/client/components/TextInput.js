@@ -1,16 +1,15 @@
-import React from 'react';
-import { hot } from 'react-hot-loader'; 
+import React from "react";
 
-import './TextInput.css';
+import "./TextInput.css";
 
 function TextInput(props) {
   return (
     <input
       type="text"
       defaultValue={props.initial}
-      onChange={(e) => props.onChange(e.target.value)}
+      onChange={e => props.onChange(e.target.value)}
     />
   );
 }
 
-export default hot(module)(TextInput);
+export default TextInput;
