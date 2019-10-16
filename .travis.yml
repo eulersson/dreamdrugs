@@ -8,11 +8,11 @@ services:
 before_script: pip install docker-compose
 
 script:
-  - ci_env="bash <(curl -s https://codecov.io/env)"
-  - ci_post_cov="bash <(curl -s https://codecov.io/bash)"
-
   # Run backend tests (Python) and upload coverage.
-  - docker-compose run backend sh -c '$ci_env && pytest --cov=dreambox --cov-report xml && $ci_post_cov'
+  - docker-compose run -v "$PWD/shared:/shared" backend sh -c 'pytest --cov=dreambox --cov-report xml && mv backend/coverage.xml /shared'
 
   # Run frontend tests (JavaScript) and upload coverage.
-  - docker-compose run frontend sh -c "$ci_env && yarn test:coverage && $ci_post_cov"
+  - docker-compose run -v "$PWD/shared:/shared" frontend sh -c "yarn test:coverage && mv frontend/coverage/coverage-final.json /shared"
+
+  # Collect reports and send them together.
+  - bash <(curl -s https://codecov.io/bash)
