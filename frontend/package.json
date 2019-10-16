@@ -7,8 +7,7 @@
     "dev": "nodemon --ignore src/client/ --ignore dist/ server.js",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "test:watch": "jest --watchAll",
-    "test:snapshot": "jest --updateSnapshot"
+    "test:watch": "jest --watchAll"
   },
   "dependencies": {
     "axios": "^0.19.0",

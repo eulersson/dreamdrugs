@@ -4,6 +4,7 @@ exports[`toggle renders correctly 1`] = `
 <div
   className="toggled"
   id="Toggle"
+  onClick={[Function]}
 >
   <div
     id="bar1"

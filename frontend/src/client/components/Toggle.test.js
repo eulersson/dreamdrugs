@@ -8,7 +8,7 @@ import { shallow } from "enzyme";
 describe("toggle", () => {
   it("renders correctly", () => {
     const component = renderer
-      .create(<Toggle switch={true} onChance={() => {}} />)
+      .create(<Toggle switch={true} onChange={() => {}} />)
       .toJSON();
     expect(component).toMatchSnapshot();
   });
