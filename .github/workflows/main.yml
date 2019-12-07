@@ -9,6 +9,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v1
 
+    - name: Build services
+      run: docker-compose build
+
     - name: Run backend tests
       run: docker-compose run backend sh -c 'pytest --cov=dreambox --cov-report xml'
 
@@ -22,3 +25,15 @@ jobs:
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
+
+    - name: Push backend container
+      run: echo TODO
+
+    - name: Push frontend container
+      run: |
+        docker login docker.pkg.github.com -u docwhite -p ${{ secrets.GITHUB_TOKEN }}
+        docker.pkg.github.com/docwhite/dreambox/dreambox_frontend:1.0
+        docker push docker.pkg.github.com/docwhite/dreambox/dreambox_frontend:1.0
+
+    - name: Trigger deploy
+      run: echo TODO
