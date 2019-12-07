@@ -1,6 +1,9 @@
-name: CI
+name: Deploy
 
-on: [push]
+on:
+  push:
+    tags:
+      - '*'
 
 jobs:
   build:
@@ -12,19 +15,8 @@ jobs:
     - name: Build backend
       run: docker-compose build backend
 
-    - name: Run backend tests
-      run: docker-compose run backend sh -c 'pytest --cov=dreambox --cov-report xml'
-
     - name: Build frontend
       run: docker-compose build frontend
-
-    - name: Run frontend tests
-      run: docker-compose run frontend sh -c 'yarn test:coverage'
-
-    - name: Upload test coverage
-      uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
 
     - name: Push backend container
       run: |
