@@ -10,5 +10,7 @@ jobs:
       uses: actions/checkout@v1
     - name: Run backend tests
       run: docker-compose run backend sh -c 'pytest'
+    - name: List files under folder backend
+      run: ls -la ./backend
     - name: Run frontend tests
       run: docker-compose run frontend sh -c 'yarn test'
