@@ -27,13 +27,16 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
 
     - name: Push backend container
-      run: echo TODO
+      run: |
+        docker login docker.pkg.github.com -u docwhite -p ${{ secrets.GITHUB_TOKEN }}
+        docker tag dreambox_frontend docker.pkg.github.com/docwhite/dreambox/backend:1.0
+        docker push docker.pkg.github.com/docwhite/dreambox/backend:1.0
 
     - name: Push frontend container
       run: |
         docker login docker.pkg.github.com -u docwhite -p ${{ secrets.GITHUB_TOKEN }}
-        docker tag dreambox_frontend docker.pkg.github.com/docwhite/dreambox/dreambox_frontend:1.0
-        docker push docker.pkg.github.com/docwhite/dreambox/dreambox_frontend:1.0
+        docker tag dreambox_frontend docker.pkg.github.com/docwhite/dreambox/frontend:1.0
+        docker push docker.pkg.github.com/docwhite/dreambox/frontend:1.0
 
     - name: Trigger deploy
-      run: echo TODO
+      run: echo TODO deployment to Kubernetes on AWS
