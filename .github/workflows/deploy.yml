@@ -12,6 +12,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v1
 
+    - name: Extract release version from tag
+      run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
+
     - name: Build backend
       run: docker-compose build backend
 
@@ -21,14 +24,14 @@ jobs:
     - name: Push backend container
       run: |
         docker login docker.pkg.github.com -u docwhite -p ${{ secrets.GITHUB_TOKEN }}
-        docker tag dreambox_frontend docker.pkg.github.com/docwhite/dreambox/backend:1.0
-        docker push docker.pkg.github.com/docwhite/dreambox/backend:1.0
+        docker tag dreambox_frontend docker.pkg.github.com/docwhite/dreambox/backend:${{ env.RELEASE_VERSION }}
+        docker push docker.pkg.github.com/docwhite/dreambox/backend:${{ env.RELEASE_VERSION }}
 
     - name: Push frontend container
       run: |
         docker login docker.pkg.github.com -u docwhite -p ${{ secrets.GITHUB_TOKEN }}
-        docker tag dreambox_frontend docker.pkg.github.com/docwhite/dreambox/frontend:1.0
-        docker push docker.pkg.github.com/docwhite/dreambox/frontend:1.0
+        docker tag dreambox_frontend docker.pkg.github.com/docwhite/dreambox/frontend:${{ env.RELEASE_VERSION }}
+        docker push docker.pkg.github.com/docwhite/dreambox/frontend:${{ env.RELEASE_VERSION }}
 
     - name: Trigger deploy
       run: echo TODO deployment to Kubernetes on AWS
