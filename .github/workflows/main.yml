@@ -9,14 +9,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v1
 
-    - name: Build services
-      run: docker-compose build
+    - name: Build backend
+      run: docker-compose build backend
 
     - name: Run backend tests
       run: docker-compose run backend sh -c 'pytest --cov=dreambox --cov-report xml'
 
-    - name: List files under folder backend
-      run: ls -la ./backend
+    - name: Build frontend
+      run: docker-compose build frontend
 
     - name: Run frontend tests
       run: docker-compose run frontend sh -c 'yarn test:coverage'
@@ -32,7 +32,7 @@ jobs:
     - name: Push frontend container
       run: |
         docker login docker.pkg.github.com -u docwhite -p ${{ secrets.GITHUB_TOKEN }}
-        docker.pkg.github.com/docwhite/dreambox/dreambox_frontend:1.0
+        docker tag dreambox_frontend docker.pkg.github.com/docwhite/dreambox/dreambox_frontend:1.0
         docker push docker.pkg.github.com/docwhite/dreambox/dreambox_frontend:1.0
 
     - name: Trigger deploy
