@@ -17,5 +17,14 @@ spec:
       containers:
         - name: backend
           image: docker.pkg.github.com/docwhite/dreambox/backend:1.0.0
+          env:
+            - name: ENV
+              value: 'production'
+            - name: DEBUG
+              value: '0'
+            - name: FLASKPORT
+              value: '4000'
+            - name: GUNICORNPORT
+              value: '8000'
       imagePullSecrets:
         - name: regcred
