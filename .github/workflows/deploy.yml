@@ -24,7 +24,7 @@ jobs:
     - name: Push backend container
       run: |
         docker login docker.pkg.github.com -u docwhite -p ${{ secrets.GITHUB_TOKEN }}
-        docker tag dreambox_frontend docker.pkg.github.com/docwhite/dreambox/backend:${{ env.RELEASE_VERSION }}
+        docker tag dreambox_backend docker.pkg.github.com/docwhite/dreambox/backend:${{ env.RELEASE_VERSION }}
         docker push docker.pkg.github.com/docwhite/dreambox/backend:${{ env.RELEASE_VERSION }}
 
     - name: Push frontend container
