@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: backend-service
+spec:
+  type: NodePort
+  selector:
+    pod: backend
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
