@@ -36,7 +36,7 @@ jobs:
 
     - name: Push backend container
       run: |
-        docker tag dreambox_backend gcr.io/${ GKE_PROJECT }/backend:${{ env.RELEASE_VERSION }}
+        docker tag dreambox_backend gcr.io/"$GKE_PROJECT"/backend:${{ env.RELEASE_VERSION }}
         docker push gcr.io/$GKE_PROJECT/backend:${{ env.RELEASE_VERSION }}
 
     - name: Set up Kustomize
