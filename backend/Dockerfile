@@ -6,9 +6,9 @@ COPY poetry.lock pyproject.toml ./
 
 RUN apt update && apt install -y curl
 
-RUN pip install --upgrade keyrings.alt \  # Can't run any poetry command otherwise.
+RUN pip install --upgrade keyrings.alt \
  && pip install poetry \
- && poetry config settings.virtualenvs.create false \
+ && poetry config virtualenvs.create false \
  && poetry install $(test "$ENV" = "production" && echo "--no-dev") --no-interaction
 
 COPY . .
