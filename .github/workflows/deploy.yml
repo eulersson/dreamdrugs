@@ -5,8 +5,14 @@ on:
     tags:
       - '*'
 
+env:
+  GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
+  GKE_ZONE: ${{ secrets.GKE_ZONE }}
+  GKE_CLUSTER: dreambox
+
 jobs:
-  build:
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish and Deploy.
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -15,23 +21,33 @@ jobs:
     - name: Extract release version from tag
       run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
 
+    - name: Setup Google Cloud Platform credentials
+      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+        version: '270.0.0'
+        service_account_email: ${{ secrets.GKE_EMAIL }}
+        service_account_key: ${{ secrets.GKE_KEY }}
+
+    - name: Configure docker to use gcloud command-line tool as a credential helper
+      run: gcloud auth configure-docker
+
     - name: Build backend
       run: docker-compose build backend
 
-    - name: Build frontend
-      run: docker-compose build frontend
-
     - name: Push backend container
       run: |
-        docker login docker.pkg.github.com -u docwhite -p ${{ secrets.GITHUB_TOKEN }}
-        docker tag dreambox_backend docker.pkg.github.com/docwhite/dreambox/backend:${{ env.RELEASE_VERSION }}
-        docker push docker.pkg.github.com/docwhite/dreambox/backend:${{ env.RELEASE_VERSION }}
+        docker tag dreambox_backend gcr.io/${ GKE_PROJECT }/backend:${{ env.RELEASE_VERSION }}
+        docker push gcr.io/$GKE_PROJECT/backend:${{ env.RELEASE_VERSION }}
 
-    - name: Push frontend container
+    - name: Set up Kustomize
       run: |
-        docker login docker.pkg.github.com -u docwhite -p ${{ secrets.GITHUB_TOKEN }}
-        docker tag dreambox_frontend docker.pkg.github.com/docwhite/dreambox/frontend:${{ env.RELEASE_VERSION }}
-        docker push docker.pkg.github.com/docwhite/dreambox/frontend:${{ env.RELEASE_VERSION }}
+        curl -o kustomize --location https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
+        chmod u+x ./kustomize
 
-    - name: Trigger deploy
-      run: echo TODO deployment to Kubernetes on AWS
+    - name: Deploy
+      run: |
+        gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
+        ./kustomize edit set image docker.pkg.github.com/docwhite/dreambox/backend:${{ env.RELEASE_VERSION }}
+        ./kustomize build . | kubectl apply -f -
+        kubectl rollout status deployment/backend
+        kubectl get services -o wide

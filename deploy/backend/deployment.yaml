@@ -5,7 +5,7 @@ metadata:
   labels:
     deployment: backend
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       pod: backend
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: docker.pkg.github.com/docwhite/dreambox/backend:1.0.0
+          image: gcr.io/dreambox-261818/backend:latest
           env:
             - name: ENV
               value: 'production'
@@ -26,5 +26,3 @@ spec:
               value: '4000'
             - name: GUNICORNPORT
               value: '8000'
-      imagePullSecrets:
-        - name: regcred
