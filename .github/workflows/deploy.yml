@@ -41,11 +41,12 @@ jobs:
 
     - name: Set up Kustomize
       run: |
-        curl -o kustomize --location https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
-        chmod u+x ./kustomize
+        curl -o deploy/kustomize --location https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
+        chmod u+x ./deploy/kustomize
 
     - name: Deploy
       run: |
+        cd deploy
         gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
         ./kustomize edit set image docker.pkg.github.com/docwhite/dreambox/backend:${{ env.RELEASE_VERSION }}
         ./kustomize build . | kubectl apply -f -
