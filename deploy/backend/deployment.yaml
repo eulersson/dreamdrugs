@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: gcr.io/dreambox-261818/backend:latest
+          image: gcr.io/dreambox-261818/backend:1.0.0
           env:
             - name: ENV
               value: 'production'
