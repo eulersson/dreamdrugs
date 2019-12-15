@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "dreambox.fullname" . }}-backend
+  labels:
+    app: {{ template "dreambox.fullname" . }}-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: {{ template "dreambox.fullname" . }}-backend
+  template:
+    metadata:
+      labels:
+        app: {{ template "dreambox.fullname" . }}-backend
+    spec:
+      containers:
+        - name: backend
+          image: gcr.io/{{ .Values.projectId }}/backend:{{ .Values.tag }}
+          env:
+          - name: ENV
+            value: 'production'
+          - name: DEBUG
+            value: '0'
+          - name: FLASKPORT
+            value: '4000'
+          - name: GUNICORNPORT
+            value: '8000'
+          ports:
+          - containerPort: 8000
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "dreambox.fullname" . }}-backend
+spec:
+  type: NodePort
+  selector:
+    app: {{ template "dreambox.fullname" . }}-backend
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8000

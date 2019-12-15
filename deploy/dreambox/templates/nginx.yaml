@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+      - image: nginx:1.15.3-alpine
+        name: nginx
+        ports:
+        - name: http
+          containerPort: {{ .Values.hostPort }}
+          hostPort: {{ .Values.hostPort }}
+        volumeMounts:
+        - name: "config"
+          mountPath: "/etc/nginx"
+      volumes:
+      - name: config
+        configMap:
+          name: nginx-conf
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+data:
+  nginx.conf: |
+    worker_processes 1;
+    error_log /dev/stdout info;
+
+    events {
+      worker_connections 10;
+    }
+
+    http {
+      access_log /dev/stdout;
+
+      server {
+        listen {{ .Values.hostPort }};
+        location / {
+          proxy_pass http://{{ template "dreambox.fullname" . }}-backend.default.svc.cluster.local:8080;
+        }
+      }
+    }
