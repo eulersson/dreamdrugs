@@ -48,6 +48,9 @@ jobs:
       run: |
         cd deploy
         gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
+        curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
+        chmod 700 get_helm.sh
+        ./get_helm.sh
         helm upgrade --install dreambox deploy/dreambox --set backendImage=gcr.io/dreambox-"$GKE_PROJECT"/backend:${{ env.RELEASE_VERSION }}
         kubectl rollout status deployment/backend
         kubectl get services -o wide
