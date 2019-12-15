@@ -1,0 +1,17 @@
+apiVersion: skaffold/v1
+kind: Config
+metadata:
+  name: dreambox
+build:
+  tagPolicy:
+    sha256: {}
+  artifacts:
+  - image: gcr.io/dreambox-261818/backend
+    context: backend
+deploy:
+  helm:
+    releases:
+    - name: skaffold-helm
+      chartPath: deploy/dreambox
+      values:
+        backendImage: gcr.io/dreambox-261818/backend

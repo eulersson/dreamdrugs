@@ -6,3 +6,5 @@ projectId: dreambox-261818
 
 # What docker image tag for the images to pull.
 tag: latest
+
+backendImage: gcr.io/dreambox-261818/backend:1.0.0

@@ -48,7 +48,6 @@ jobs:
       run: |
         cd deploy
         gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
-        ./kustomize edit set image docker.pkg.github.com/docwhite/dreambox/backend:${{ env.RELEASE_VERSION }}
-        ./kustomize build . | kubectl apply -f -
+        helm upgrade --install dreambox deploy/dreambox --set backendImage=gcr.io/dreambox-"$GKE_PROJECT"/backend:${{ env.RELEASE_VERSION }}
         kubectl rollout status deployment/backend
         kubectl get services -o wide

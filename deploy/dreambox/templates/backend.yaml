@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: gcr.io/{{ .Values.projectId }}/backend:{{ .Values.tag }}
+          image: {{ .Values.backendImage }}
           env:
           - name: ENV
             value: 'production'
