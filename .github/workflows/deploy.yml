@@ -48,7 +48,7 @@ jobs:
     - name: Deploy
       run: |
         gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
-        helm upgrade --install dreambox deploy/dreambox --set backendImage=gcr.io/dreambox-"$GKE_PROJECT"/backend:${{ env.RELEASE_VERSION }}
+        helm upgrade --install dreambox deploy/dreambox --set backendImage=gcr.io/"$GKE_PROJECT"/backend:${{ env.RELEASE_VERSION }}
         helm status dreambox
         kubectl rollout status deployment/dreambox-backend
         kubectl get services -o wide
