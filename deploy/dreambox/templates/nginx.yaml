@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: nginx
+  name: {{ template "dreambox.fullname" . }}-nginx
   labels:
-    app: nginx
+    app: {{ template "dreambox.fullname" . }}-nginx
 spec:
   selector:
     matchLabels:
-      app: nginx
+      app: {{ template "dreambox.fullname" . }}-nginx
   template:
     metadata:
       labels:
-        app: nginx
+        app: {{ template "dreambox.fullname" . }}-nginx
     spec:
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
@@ -28,12 +28,12 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: nginx-conf
+          name: {{ template "dreambox.fullname" . }}-nginx-conf
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: nginx-conf
+  name: {{ template "dreambox.fullname" . }}-nginx-conf
 data:
   nginx.conf: |
     worker_processes 1;
