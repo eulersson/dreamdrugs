@@ -1,13 +1,13 @@
 version: "3"
 services:
-  frontend:
+  dreambox-frontend:
     volumes:
       - ./frontend:/dreambox/frontend
       - /dreambox/frontend/node_modules
     environment:
       - NODE_ENV=development
 
-  backend:
+  dreambox-backend:
     volumes:
       - ./backend:/dreambox/backend
     environment:

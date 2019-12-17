@@ -13,10 +13,10 @@ jobs:
       uses: actions/checkout@v1
 
     - name: Run backend tests
-      run: docker-compose run backend sh -c 'pytest --cov=dreambox --cov-report xml'
+      run: docker-compose run dreambox-backend sh -c 'pytest --cov=dreambox --cov-report xml'
 
     - name: Run frontend tests
-      run: docker-compose run frontend sh -c 'yarn test:coverage'
+      run: docker-compose run dreambox-frontend sh -c 'yarn test:coverage'
 
     - name: Upload test coverage
       uses: codecov/codecov-action@v1

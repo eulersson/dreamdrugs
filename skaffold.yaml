@@ -8,10 +8,16 @@ build:
   artifacts:
   - image: gcr.io/dreambox-261818/backend
     context: backend
+  - image: gcr.io/dreambox-261818/frontend
+    context: frontend
 deploy:
   helm:
+    flags:
+      upgrade:
+      - "--install"  # https://github.com/GoogleContainerTools/skaffold/issues/2142#issuecomment-553835849
     releases:
     - name: skaffold-helm
       chartPath: deploy/dreambox
       values:
         backendImage: gcr.io/dreambox-261818/backend
+        frontendImage: gcr.io/dreambox-261818/backend

@@ -61,7 +61,7 @@ if (isDev) {
 // TODO: Move out hardcoded values to client code.
 function passImageToBackend(modelParameters, res) {
   axios
-    .post("http://api.dreambox.com/dream", modelParameters)
+    .post("http://dreambox-backend:8080/dream", modelParameters)
     .then(response => {
       client.subscribe(response.data);
       res.json({
@@ -116,21 +116,21 @@ app.post("/snap", (req, res) => {
 
 app.get("/models", (req, res) => {
   axios
-    .get("http://api.dreambox.com/models")
+    .get("http://dreambox-backend:8080/models")
     .then(response => res.json(response.data))
     .catch(err => console.error(err));
 });
 
 app.get("/signature/:model", (req, res) => {
   axios
-    .get(`http://api.dreambox.com/signature/${req.param("model")}`)
+    .get(`http://dreambox-backend:8080/signature/${req.param("model")}`)
     .then(response => res.json(response.data))
     .catch(err => console.error(err));
 });
 
 app.post("/cancel/:jobId", (req, res) => {
   axios
-    .post(`http://api.dreambox.com/cancel/${req.param("jobId")}`)
+    .post(`http://dreambox-backend:8080/cancel/${req.param("jobId")}`)
     .then(response => res.json(response.data))
     .catch(err => console.error(err));
 });

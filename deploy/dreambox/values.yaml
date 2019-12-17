@@ -8,3 +8,4 @@ projectId: dreambox-261818
 tag: latest
 
 backendImage: gcr.io/dreambox-261818/backend:1.0.0
+frontendImage: gcr.io/dreambox-261818/frontend:1.0.0

@@ -48,8 +48,11 @@ data:
 
       server {
         listen {{ .Values.hostPort }};
+        location /api {
+          proxy_pass http://{{ template "dreambox.fullname" . }}-backend.default.svc.cluster.local:8080/;
+        }
         location / {
-          proxy_pass http://{{ template "dreambox.fullname" . }}-backend.default.svc.cluster.local:8080;
+          proxy_pass http://{{ template "dreambox.fullname" . }}-frontend.default.svc.cluster.local:3030/;
         }
       }
     }

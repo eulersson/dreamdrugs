@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "dreambox.fullname" . }}-frontend
+  labels:
+    app: {{ template "dreambox.fullname" . }}-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: {{ template "dreambox.fullname" . }}-frontend
+  template:
+    metadata:
+      labels:
+        app: {{ template "dreambox.fullname" . }}-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: {{ .Values.frontendImage }}
+          env:
+          - name: NODE_ENV
+            value: 'production'
+          ports:
+          - containerPort: 3000
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "dreambox.fullname" . }}-frontend
+spec:
+  type: NodePort
+  selector:
+    app: {{ template "dreambox.fullname" . }}-frontend
+  ports:
+  - protocol: TCP
+    port: 3030
+    targetPort: 3000
