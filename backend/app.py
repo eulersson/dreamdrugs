@@ -12,18 +12,18 @@ DEBUG = bool(int(os.getenv('DEBUG', '1')))
 LEVEL = logging.DEBUG if DEBUG else logging.INFO
 
 # Initialize a Flask application.
-app = Flask('dreambox')
+app = Flask('dreamdrugs')
 
 # Configure flask werkzeug logger.
 app.logger.setLevel(LEVEL)
 
-# Setup 'dreambox' logger.
-from dreambox.logging import setup_logging  # noqa: E402
+# Setup 'dreamdrugs' logger.
+from dreamdrugs.logging import setup_logging  # noqa: E402
 log = setup_logging(LEVEL)
 
 # Import models.
-from dreambox import cancel_job, JobCancelled  # noqa: E402
-from dreambox.inception5h import Inception5hModel  # noqa: E402
+from dreamdrugs import cancel_job, JobCancelled  # noqa: E402
+from dreamdrugs.inception5h import Inception5hModel  # noqa: E402
 
 # Map for the available models. Keys are what gets passed as URL parameters.
 MODELS = {

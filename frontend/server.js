@@ -61,7 +61,7 @@ if (isDev) {
 // TODO: Move out hardcoded values to client code.
 function passImageToBackend(modelParameters, res) {
   axios
-    .post("http://dreambox-backend:8080/dream", modelParameters)
+    .post("http://dreamdrugs-backend:8080/dream", modelParameters)
     .then(response => {
       client.subscribe(response.data);
       res.json({
@@ -116,25 +116,25 @@ app.post("/snap", (req, res) => {
 
 app.get("/models", (req, res) => {
   axios
-    .get("http://dreambox-backend:8080/models")
+    .get("http://dreamdrugs-backend:8080/models")
     .then(response => res.json(response.data))
     .catch(err => console.error(err));
 });
 
 app.get("/signature/:model", (req, res) => {
   axios
-    .get(`http://dreambox-backend:8080/signature/${req.param("model")}`)
+    .get(`http://dreamdrugs-backend:8080/signature/${req.param("model")}`)
     .then(response => res.json(response.data))
     .catch(err => console.error(err));
 });
 
 app.post("/cancel/:jobId", (req, res) => {
   axios
-    .post(`http://dreambox-backend:8080/cancel/${req.param("jobId")}`)
+    .post(`http://dreamdrugs-backend:8080/cancel/${req.param("jobId")}`)
     .then(response => res.json(response.data))
     .catch(err => console.error(err));
 });
 
 http.listen(3000, () => {
-  console.log(`Dreambox app listening! NODE_ENV: ${process.env.NODE_ENV}`);
+  console.log(`dreamdrugs app listening! NODE_ENV: ${process.env.NODE_ENV}`);
 });

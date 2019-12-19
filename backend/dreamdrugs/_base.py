@@ -2,7 +2,7 @@ import abc
 import random
 import inspect
 
-from dreambox.validators import ValidationError
+from dreamdrugs.validators import ValidationError
 
 import redis
 redis_client = redis.StrictRedis(host='database')
@@ -48,7 +48,7 @@ class Model(metaclass=abc.ABCMeta):
 
         The way you would normally use the accepts decorator is::
 
-            from dreambox.validators import StringOneOf, IntBetween
+            from dreamdrugs.validators import StringOneOf, IntBetween
             @accepts(name=stringOneOf('dog', 'cat'), age=IntBetween(0, 30))
             def run(name='dog', age=3):
                 pass

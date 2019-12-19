@@ -7,9 +7,9 @@ import tensorflow as tf
 
 from scipy.ndimage.filters import gaussian_filter
 
-from dreambox import Model, JobCancelled
-from dreambox.utils import load_image, image_from_array, resize_image
-from dreambox.validators import (
+from dreamdrugs import Model, JobCancelled
+from dreamdrugs.utils import load_image, image_from_array, resize_image
+from dreamdrugs.validators import (
     FloatBetween,
     IntBetween,
     StringOneOf,
@@ -19,7 +19,7 @@ from dreambox.validators import (
 
 import logging
 
-log = logging.getLogger('dreambox')
+log = logging.getLogger('dreamdrugs')
 
 # Where to download the model from.
 model_url = (

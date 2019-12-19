@@ -9,7 +9,7 @@ model, so that it can construct the UI widgets properly to send valid values
 to the backend.
 
 In order to describe and validate a model's run function signature you need to
-decorate it with dreambox.Model.accepts as follows::
+decorate it with dreamdrugs.Model.accepts as follows::
 
     @Model.accepts()
         blend=FloatBetween(0.0, 1.0),

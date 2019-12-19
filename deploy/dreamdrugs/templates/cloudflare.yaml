@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "dreambox.fullname" . }}-kubernetes-cloudflare-sync
+  name: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync
   labels:
-    app: {{ template "dreambox.fullname" . }}-kubernetes-cloudflare-sync
+    app: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ template "dreambox.fullname" . }}-kubernetes-cloudflare-sync
+      app: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync
   template:
     metadata:
       labels:
-        app: {{ template "dreambox.fullname" . }}-kubernetes-cloudflare-sync
+        app: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync
     spec:
-      serviceAccountName: {{ template "dreambox.fullname" . }}-kubernetes-cloudflare-sync
+      serviceAccountName: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync
       containers:
       - name: kubernetes-cloudflare-sync
-        image: gcr.io/dreambox-261818/kubernetes-cloudflare-sync
+        image: gcr.io/dreamdrugs/kubernetes-cloudflare-sync
         args:
-        - --dns-name=kubernetes.lethim.be
+        - --dns-name=kubernetes-{{ .Values.domain }}
         env:
         - name: CF_API_KEY
           valueFrom:
@@ -35,14 +35,14 @@ spec:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ template "dreambox.fullname" . }}-kubernetes-cloudflare-sync
+  name: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync
 imagePullSecrets:
 - name: pull-secret
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ template "dreambox.fullname" . }}-kubernetes-cloudflare-sync
+  name: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync
 rules:
 - apiGroups: [""]
   resources: ["nodes"]
@@ -51,12 +51,12 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ template "dreambox.fullname" . }}-kubernetes-cloudflare-sync-viewer
+  name: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync-viewer
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ template "dreambox.fullname" . }}-kubernetes-cloudflare-sync
+  name: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync
 subjects:
 - kind: ServiceAccount
-  name: {{ template "dreambox.fullname" . }}-kubernetes-cloudflare-sync
+  name: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync
   namespace: default

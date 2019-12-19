@@ -3,12 +3,12 @@ import logging
 
 def setup_logging(level):
     """
-    Setup dreambox logger with a stream and file handler.
+    Setup dreamdrugs logger with a stream and file handler.
 
     To get the logger later on simply::
 
         import logging
-        log = logging.getLogger('dreambox')
+        log = logging.getLogger('dreamdrugs')
 
     Arguments:
         level (int): Logging level to set.
@@ -16,7 +16,7 @@ def setup_logging(level):
     Returns:
         logging.Logger: An initialized logger.
     """
-    log = logging.getLogger('dreambox')
+    log = logging.getLogger('dreamdrugs')
     log.setLevel(level)
 
     fmt = logging.Formatter(

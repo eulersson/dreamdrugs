@@ -1,6 +1,6 @@
 FROM node
 
-WORKDIR /dreambox/frontend
+WORKDIR /dreamdrugs/frontend
 
 COPY package.json yarn.lock ./
 RUN yarn install

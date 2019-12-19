@@ -1,5 +1,5 @@
-# Dream Box
-![CI](https://github.com/docwhite/dreambox/workflows/CI/badge.svg)
-[![codecov](https://codecov.io/gh/docwhite/dreambox/branch/master/graph/badge.svg)](https://codecov.io/gh/docwhite/dreambox)
+# dreamdrugs
+![CI](https://github.com/docwhite/dreamdrugs/workflows/CI/badge.svg)
+[![codecov](https://codecov.io/gh/docwhite/dreamdrugs/branch/master/graph/badge.svg)](https://codecov.io/gh/docwhite/dreamdrugs)
 
-To be described!
+Deep dreaming to be described!

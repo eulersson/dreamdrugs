@@ -1,14 +1,14 @@
-upstream dreambox-frontend {
+upstream dreamdrugs-frontend {
     server frontend:3000;
 }
 
-upstream dreambox-backend {
+upstream dreamdrugs-backend {
     server backend:8000;
 }
 
 server {
     listen 80;
-    server_name dreambox.com;
+    server_name dreamdrugs.com;
 
     location /uploads {
         root /;
@@ -26,13 +26,13 @@ server {
 	proxy_set_header Upgrade $http_upgrade;
 	proxy_set_header Connection "upgrade";
 
-        proxy_pass http://dreambox-frontend;
+        proxy_pass http://dreamdrugs-frontend;
     }
 }
 
 server {
     listen 80;
-    server_name api.dreambox.com;
+    server_name api.dreamdrugs.com;
 
     location / {
         proxy_set_header   Host            $host;
@@ -43,6 +43,6 @@ server {
         proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_http_version 1.1;
         proxy_redirect     off;
-        proxy_pass http://dreambox-backend;
+        proxy_pass http://dreamdrugs-backend;
     }
 }

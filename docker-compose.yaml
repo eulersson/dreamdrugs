@@ -1,12 +1,12 @@
 version: "3"
 services:
-  dreambox-frontend:
+  dreamdrugs-frontend:
     restart: always
     build: ./frontend
     volumes:
       - image-uploads:/uploads
 
-  dreambox-backend:
+  dreamdrugs-backend:
     restart: always
     build: ./backend
     volumes:
@@ -22,14 +22,14 @@ services:
     ports:
       - "80:80"
     links:
-      - dreambox-backend
-      - dreambox-frontend
+      - dreamdrugs-backend
+      - dreamdrugs-frontend
     networks:
       default:
         aliases:
-          - dreambox.com
-          - api.dreambox.com
-          - dreambox-backend
+          - dreamdrugs.com
+          - api.dreamdrugs.com
+          - dreamdrugs-backend
     volumes:
       - image-uploads:/uploads
 

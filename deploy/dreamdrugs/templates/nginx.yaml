@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: {{ template "dreambox.fullname" . }}-nginx
+  name: {{ template "dreamdrugs.fullname" . }}-nginx
   labels:
-    app: {{ template "dreambox.fullname" . }}-nginx
+    app: {{ template "dreamdrugs.fullname" . }}-nginx
 spec:
   selector:
     matchLabels:
-      app: {{ template "dreambox.fullname" . }}-nginx
+      app: {{ template "dreamdrugs.fullname" . }}-nginx
   template:
     metadata:
       labels:
-        app: {{ template "dreambox.fullname" . }}-nginx
+        app: {{ template "dreamdrugs.fullname" . }}-nginx
     spec:
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
@@ -28,12 +28,12 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: {{ template "dreambox.fullname" . }}-nginx-conf
+          name: {{ template "dreamdrugs.fullname" . }}-nginx-conf
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "dreambox.fullname" . }}-nginx-conf
+  name: {{ template "dreamdrugs.fullname" . }}-nginx-conf
 data:
   nginx.conf: |
     worker_processes 1;
@@ -49,10 +49,10 @@ data:
       server {
         listen {{ .Values.hostPort }};
         location /api {
-          proxy_pass http://{{ template "dreambox.fullname" . }}-backend.default.svc.cluster.local:8080/;
+          proxy_pass http://{{ template "dreamdrugs.fullname" . }}-backend.default.svc.cluster.local:8080/;
         }
         location / {
-          proxy_pass http://{{ template "dreambox.fullname" . }}-frontend.default.svc.cluster.local:3030/;
+          proxy_pass http://{{ template "dreamdrugs.fullname" . }}-frontend.default.svc.cluster.local:3030/;
         }
       }
     }

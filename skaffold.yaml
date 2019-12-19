@@ -1,14 +1,14 @@
 apiVersion: skaffold/v1
 kind: Config
 metadata:
-  name: dreambox
+  name: dreamdrugs
 build:
   tagPolicy:
     sha256: {}
   artifacts:
-  - image: gcr.io/dreambox-261818/backend
+  - image: gcr.io/dreamdrugs/backend
     context: backend
-  - image: gcr.io/dreambox-261818/frontend
+  - image: gcr.io/dreamdrugs/frontend
     context: frontend
 deploy:
   helm:
@@ -17,7 +17,7 @@ deploy:
       - "--install"  # https://github.com/GoogleContainerTools/skaffold/issues/2142#issuecomment-553835849
     releases:
     - name: skaffold-helm
-      chartPath: deploy/dreambox
+      chartPath: deploy/dreamdrugs
       values:
-        backendImage: gcr.io/dreambox-261818/backend
-        frontendImage: gcr.io/dreambox-261818/backend
+        backendImage: gcr.io/dreamdrugs/backend
+        frontendImage: gcr.io/dreamdrugs/backend

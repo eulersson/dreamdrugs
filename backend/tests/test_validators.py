@@ -1,6 +1,6 @@
 import pytest
 
-from dreambox.validators import (
+from dreamdrugs.validators import (
     _Validator,
     _Typed,
     ValidationError,

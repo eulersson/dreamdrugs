@@ -1,6 +1,6 @@
 FROM tensorflow/tensorflow:1.13.2-py3
 
-WORKDIR /dreambox/backend
+WORKDIR /dreamdrugs/backend
 
 COPY poetry.lock pyproject.toml ./
 
