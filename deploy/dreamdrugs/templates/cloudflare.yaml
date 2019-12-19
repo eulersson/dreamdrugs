@@ -19,7 +19,7 @@ spec:
       - name: kubernetes-cloudflare-sync
         image: gcr.io/dreamdrugs/kubernetes-cloudflare-sync
         args:
-        - --dns-name=kubernetes-{{ .Values.domain }}
+        - --dns-name=kubernetes.{{ .Values.domain }}
         env:
         - name: CF_API_KEY
           valueFrom:
