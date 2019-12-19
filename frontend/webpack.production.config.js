@@ -1,6 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   entry: {
@@ -26,7 +26,7 @@ module.exports = {
     ] 
   },
   plugins: [
-    new CleanWebpackPlugin(['dist'], { verbose: true }),
+    new CleanWebpackPlugin({ verbose: true }),
     new HtmlWebpackPlugin({
       template: './src/server/views/index.html',
       filename: 'index.html',
