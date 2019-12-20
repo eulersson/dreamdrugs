@@ -5,7 +5,7 @@ metadata:
   labels:
     app: {{ template "dreamdrugs.fullname" . }}-backend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: {{ template "dreamdrugs.fullname" . }}-backend
