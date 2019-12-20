@@ -5,7 +5,10 @@ import inspect
 from dreamdrugs.validators import ValidationError
 
 import redis
-redis_client = redis.StrictRedis(host='database')
+redis_client = redis.StrictRedis(
+    host=os.environ['REDIS_HOST'],
+    password=os.environ['REDIS_PASSWORD']
+)
 
 
 class JobCancelled(Exception):

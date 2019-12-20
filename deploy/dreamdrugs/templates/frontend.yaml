@@ -20,6 +20,14 @@ spec:
           env:
           - name: NODE_ENV
             value: 'production'
+          - name: REDIS_HOST
+            value: 'redis-master.default.svc.cluster.local'
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: redis
+                key: redis-password
+
           ports:
           - containerPort: 3000
 ---

@@ -5,7 +5,10 @@ const multer = require("multer");
 const redis = require("redis");
 
 // Setup redis client.
-const client = redis.createClient({ host: "database" });
+const client = redis.createClient({
+  host: process.env.REDIS_HOST,
+  password: process.env.REDIS_PASSWORD
+});
 client.on("error", err => console.error(err));
 
 // Setup server and sockets.

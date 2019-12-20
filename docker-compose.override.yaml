@@ -6,6 +6,8 @@ services:
       - /dreamdrugs/frontend/node_modules
     environment:
       - NODE_ENV=development
+      - REDIS_HOST=database
+      - REDIS_PASSWORD=''
 
   dreamdrugs-backend:
     volumes:
@@ -15,3 +17,5 @@ services:
       - PYTHONUNBUFFERED=1
       - DEBUG=1
       - FLASKPORT=8000
+      - REDIS_HOST=database
+      - REDIS_PASSWORD=''
