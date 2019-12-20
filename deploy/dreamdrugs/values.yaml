@@ -11,5 +11,5 @@ tag: latest
 domain: dreamdrugs.art
 
 # The images to deploy.
-backendImage: gcr.io/dreamdrugs/backend:1.0.0
-frontendImage: gcr.io/dreamdrugs/frontend:1.0.0
+backendImage: gcr.io/dreamdrugs/backend:0.1.0
+frontendImage: gcr.io/dreamdrugs/frontend:0.1.0
