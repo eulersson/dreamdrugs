@@ -4,6 +4,9 @@ const fs = require("fs");
 const multer = require("multer");
 const redis = require("redis");
 
+// Get hold of the backend domain.
+const BACKEND_DOMAIN = process.env.BACKEND_DOMAIN
+
 // Setup redis client.
 const client = redis.createClient({
   host: process.env.REDIS_HOST,
@@ -64,7 +67,7 @@ if (isDev) {
 // TODO: Move out hardcoded values to client code.
 function passImageToBackend(modelParameters, res) {
   axios
-    .post("http://dreamdrugs-backend:8000/dream", modelParameters)
+    .post(`http://${BACKEND_DOMAIN}:8000/dream`, modelParameters)
     .then(response => {
       client.subscribe(response.data);
       res.json({
@@ -119,21 +122,21 @@ app.post("/snap", (req, res) => {
 
 app.get("/models", (req, res) => {
   axios
-    .get("http://dreamdrugs-backend:8000/models")
+    .get(`http://${BACKEND_DOMAIN}:8000/models`)
     .then(response => res.json(response.data))
     .catch(err => console.error(err));
 });
 
 app.get("/signature/:model", (req, res) => {
   axios
-    .get(`http://dreamdrugs-backend:8000/signature/${req.param("model")}`)
+    .get(`http://${BACKEND_DOMAIN}:8000/signature/${req.param("model")}`)
     .then(response => res.json(response.data))
     .catch(err => console.error(err));
 });
 
 app.post("/cancel/:jobId", (req, res) => {
   axios
-    .post(`http://dreamdrugs-backend:8000/cancel/${req.param("jobId")}`)
+    .post(`http://${BACKEND_DOMAIN}:8000/cancel/${req.param("jobId")}`)
     .then(response => res.json(response.data))
     .catch(err => console.error(err));
 });

@@ -1,9 +1,9 @@
 upstream dreamdrugs-frontend {
-    server dreamdrugs-frontend:3000;
+    server frontend:3000;
 }
 
 upstream dreamdrugs-backend {
-    server dreamdrugs-backend:8000;
+    server backend:8000;
 }
 
 server {

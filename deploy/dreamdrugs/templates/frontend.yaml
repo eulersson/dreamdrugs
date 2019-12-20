@@ -20,6 +20,8 @@ spec:
           env:
           - name: NODE_ENV
             value: 'production'
+          - name: BACKEND_DOMAIN
+            value: {{ template "dreamdrugs.fullname" . }}-backend
           - name: REDIS_HOST
             value: 'redis-master.default.svc.cluster.local'
           - name: REDIS_PASSWORD
