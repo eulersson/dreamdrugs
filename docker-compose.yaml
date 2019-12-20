@@ -29,7 +29,6 @@ services:
         aliases:
           - dreamdrugs.com
           - api.dreamdrugs.com
-          - dreamdrugs-backend
     volumes:
       - image-uploads:/uploads
 

@@ -8,5 +8,4 @@ services:
     environment:
       - ENV=production
       - DEBUG=0
-      - FLASKPORT=4000
       - GUNICORNPORT=8000

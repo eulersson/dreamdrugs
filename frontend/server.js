@@ -64,7 +64,7 @@ if (isDev) {
 // TODO: Move out hardcoded values to client code.
 function passImageToBackend(modelParameters, res) {
   axios
-    .post("http://dreamdrugs-backend:8080/dream", modelParameters)
+    .post("http://dreamdrugs-backend:8000/dream", modelParameters)
     .then(response => {
       client.subscribe(response.data);
       res.json({
@@ -119,21 +119,21 @@ app.post("/snap", (req, res) => {
 
 app.get("/models", (req, res) => {
   axios
-    .get("http://dreamdrugs-backend:8080/models")
+    .get("http://dreamdrugs-backend:8000/models")
     .then(response => res.json(response.data))
     .catch(err => console.error(err));
 });
 
 app.get("/signature/:model", (req, res) => {
   axios
-    .get(`http://dreamdrugs-backend:8080/signature/${req.param("model")}`)
+    .get(`http://dreamdrugs-backend:8000/signature/${req.param("model")}`)
     .then(response => res.json(response.data))
     .catch(err => console.error(err));
 });
 
 app.post("/cancel/:jobId", (req, res) => {
   axios
-    .post(`http://dreamdrugs-backend:8080/cancel/${req.param("jobId")}`)
+    .post(`http://dreamdrugs-backend:8000/cancel/${req.param("jobId")}`)
     .then(response => res.json(response.data))
     .catch(err => console.error(err));
 });

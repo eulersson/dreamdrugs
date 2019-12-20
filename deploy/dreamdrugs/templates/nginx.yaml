@@ -49,7 +49,7 @@ data:
       server {
         listen {{ .Values.hostPort }};
         location /api {
-          proxy_pass http://{{ template "dreamdrugs.fullname" . }}-backend.default.svc.cluster.local:8080/;
+          proxy_pass http://{{ template "dreamdrugs.fullname" . }}-backend.default.svc.cluster.local:8000/;
         }
         location / {
           proxy_pass http://{{ template "dreamdrugs.fullname" . }}-frontend.default.svc.cluster.local:3030/;
