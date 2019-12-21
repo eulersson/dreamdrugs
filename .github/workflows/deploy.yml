@@ -68,18 +68,15 @@ jobs:
 
     - name: Deploy
       run: |
-        gcloud \
-          container \
-          clusters \
-          get-credentials \
-          $GKE_CLUSTER \
+        gcloud container clusters \
+          get-credentials $GKE_CLUSTER \
           --zone $GKE_ZONE \
           --project $GKE_PROJECT
 
-      sed -i 's/version: .*/version: '"$RELEASE_VERSION"'/' deploy/dreamdrugs/Chart.yaml
-      sed -i 's/appVersion: .*/appVersion: '"$RELEASE_VERSION"'/' deploy/dreamdrugs/Chart.yaml
+        sed -i 's/version: .*/version: '"$RELEASE_VERSION"'/' deploy/dreamdrugs/Chart.yaml
+        sed -i 's/appVersion: .*/appVersion: '"$RELEASE_VERSION"'/' deploy/dreamdrugs/Chart.yaml
 
-      cat deploy/dreamdrugs/Chart.yaml
+        cat deploy/dreamdrugs/Chart.yaml
 
         helm \
           upgrade \
@@ -89,4 +86,4 @@ jobs:
           --set backendImage=gcr.io/"$GKE_PROJECT"/backend:"$GITHUB_SHA" \
           --set frontendImage=gcr.io/"$GKE_PROJECT"/frontend:"$GITHUB_SHA" \
 
-        helm status dreamdrugs
+          helm status dreamdrugs
