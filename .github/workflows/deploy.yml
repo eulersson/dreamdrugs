@@ -76,8 +76,6 @@ jobs:
         sed -i 's/version: .*/version: '"$RELEASE_VERSION"'/' deploy/dreamdrugs/Chart.yaml
         sed -i 's/appVersion: .*/appVersion: '"$RELEASE_VERSION"'/' deploy/dreamdrugs/Chart.yaml
 
-        cat deploy/dreamdrugs/Chart.yaml
-
         helm \
           upgrade \
           --install \
@@ -85,5 +83,3 @@ jobs:
           deploy/dreamdrugs \
           --set backendImage=gcr.io/"$GKE_PROJECT"/backend:"$GITHUB_SHA" \
           --set frontendImage=gcr.io/"$GKE_PROJECT"/frontend:"$GITHUB_SHA" \
-
-          helm status dreamdrugs
