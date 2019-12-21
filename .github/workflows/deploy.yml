@@ -73,8 +73,8 @@ jobs:
           --zone $GKE_ZONE \
           --project $GKE_PROJECT
 
-      sed -i 's/version: .*/version: ${{ env.RELEASE_VERSION }}/' deploy/dreamdrugs/Chart.yaml
-      sed -i 's/appVersion: .*/appVersion: ${{ env.RELEASE_VERSION }}/' deploy/dreamdrugs/Chart.yaml
+      sed -i 's/version: .*/version: '${{ env.RELEASE_VERSION }}'/' deploy/dreamdrugs/Chart.yaml
+      sed -i 's/appVersion: .*/appVersion: '${{ env.RELEASE_VERSION }}'/' deploy/dreamdrugs/Chart.yaml
 
       cat deploy/dreamdrugs/Chart.yaml
 
