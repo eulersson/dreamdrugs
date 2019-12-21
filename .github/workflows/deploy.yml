@@ -31,27 +31,59 @@ jobs:
       run: gcloud auth configure-docker
 
     - name: Build backend
-      run: docker build -t gcr.io/"$GKE_PROJECT"/backend:${{ env.RELEASE_VERSION }} ./backend
+      run: |
+        docker \
+          build \
+          -t gcr.io/"$GKE_PROJECT"/backend:${{ env.RELEASE_VERSION }} \
+          -t gcr.io/"$GKE_PROJECT"/backend:"$GITHUB_SHA" \
+          ./backend
 
     - name: Build frontend
-      run: docker build -t gcr.io/"$GKE_PROJECT"/frontend:${{ env.RELEASE_VERSION }} ./frontend
+      run: |
+        docker \
+          build \
+          -t gcr.io/"$GKE_PROJECT"/frontend:${{ env.RELEASE_VERSION }} \
+          -t gcr.io/"$GKE_PROJECT"/frontend:"$GITHUB_SHA" \
+          ./frontend
 
     - name: Push backend container
       run: |
         docker push gcr.io/$GKE_PROJECT/backend:${{ env.RELEASE_VERSION }}
+        docker push gcr.io/"$GKE_PROJECT"/backend:"$GITHUB_SHA"
 
     - name: Push frontend container
       run: |
         docker push gcr.io/$GKE_PROJECT/frontend:${{ env.RELEASE_VERSION }}
+        docker push gcr.io/"$GKE_PROJECT"/frontend:"$GITHUB_SHA"
 
     - name: Set up Helm
       run: |
-        curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
+        curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 \
+          > get_helm.sh
         chmod 700 get_helm.sh
         ./get_helm.sh
 
     - name: Deploy
       run: |
-        gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
-        helm upgrade --install dreamdrugs deploy/dreamdrugs --set backendImage=gcr.io/"$GKE_PROJECT"/backend:${{ env.RELEASE_VERSION }} --set frontendImage=gcr.io/"$GKE_PROJECT"/frontend:${{ env.RELEASE_VERSION }}
+        gcloud \
+          container \
+          clusters \
+          get-credentials \
+          $GKE_CLUSTER \
+          --zone $GKE_ZONE \
+          --project $GKE_PROJECT
+
+      sed -i 's/version: .*/version: ${{ env.RELEASE_VERSION }}/' deploy/dreamdrugs/Chart.yaml
+      sed -i 's/appVersion: .*/appVersion: ${{ env.RELEASE_VERSION }}/' deploy/dreamdrugs/Chart.yaml
+
+      cat deploy/dreamdrugs/Chart.yaml
+
+        helm \
+          upgrade \
+          --install \
+          dreamdrugs \
+          deploy/dreamdrugs \
+          --set backendImage=gcr.io/"$GKE_PROJECT"/backend:"$GITHUB_SHA" \
+          --set frontendImage=gcr.io/"$GKE_PROJECT"/frontend:"$GITHUB_SHA" \
+
         helm status dreamdrugs
