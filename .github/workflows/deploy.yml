@@ -20,6 +20,9 @@ jobs:
     - name: Extract release version from tag
       run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
 
+    - name: Debug release version
+      run: echo $RELEASE_VERSION
+
     - name: Setup Google Cloud Platform credentials
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
@@ -73,8 +76,8 @@ jobs:
           --zone $GKE_ZONE \
           --project $GKE_PROJECT
 
-      sed -i 's/version: .*/version: '${{ env.RELEASE_VERSION }}'/' deploy/dreamdrugs/Chart.yaml
-      sed -i 's/appVersion: .*/appVersion: '${{ env.RELEASE_VERSION }}'/' deploy/dreamdrugs/Chart.yaml
+      sed -i 's/version: .*/version: ${RELEASE_VERSION}/' deploy/dreamdrugs/Chart.yaml
+      sed -i 's/appVersion: .*/appVersion: ${RELEASE_VERSION}/' deploy/dreamdrugs/Chart.yaml
 
       cat deploy/dreamdrugs/Chart.yaml
 
