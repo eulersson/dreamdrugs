@@ -20,4 +20,4 @@ deploy:
       chartPath: deploy/dreamdrugs
       values:
         backendImage: gcr.io/dreamdrugs/backend
-        frontendImage: gcr.io/dreamdrugs/backend
+        frontendImage: gcr.io/dreamdrugs/frontend

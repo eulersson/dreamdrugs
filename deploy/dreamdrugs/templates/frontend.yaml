@@ -15,23 +15,23 @@ spec:
         app: {{ template "dreamdrugs.fullname" . }}-frontend
     spec:
       containers:
-        - name: frontend
-          image: {{ .Values.frontendImage }}
-          env:
-          - name: NODE_ENV
-            value: 'production'
-          - name: BACKEND_DOMAIN
-            value: {{ template "dreamdrugs.fullname" . }}-backend
-          - name: REDIS_HOST
-            value: 'redis-master.default.svc.cluster.local'
-          - name: REDIS_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: redis
-                key: redis-password
+      - name: frontend
+        image: {{ .Values.frontendImage }}
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: 'production'
+        - name: BACKEND_DOMAIN
+          value: {{ template "dreamdrugs.fullname" . }}-backend
+        - name: REDIS_HOST
+          value: 'redis-master.default.svc.cluster.local'
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis
+              key: redis-password
 
-          ports:
-          - containerPort: 3000
 ---
 kind: Service
 apiVersion: v1
