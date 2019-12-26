@@ -18,6 +18,7 @@ deploy:
     releases:
     - name: skaffold-helm
       chartPath: deploy/dreamdrugs
-      values:
+      setValues:
         backendImage: gcr.io/dreamdrugs/backend
         frontendImage: gcr.io/dreamdrugs/frontend
+        development: true

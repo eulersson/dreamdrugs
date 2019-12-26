@@ -21,7 +21,11 @@ spec:
         - containerPort: 3000
         env:
         - name: NODE_ENV
+          {{ if .Values.development }}
+          value: 'development'
+          {{ else }}
           value: 'production'
+          {{ end }}
         - name: BACKEND_DOMAIN
           value: {{ template "dreamdrugs.fullname" . }}-backend
         - name: REDIS_HOST

@@ -1,3 +1,4 @@
+{{ if not .Values.development }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -60,3 +61,4 @@ subjects:
 - kind: ServiceAccount
   name: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync
   namespace: default
+{{ end }}

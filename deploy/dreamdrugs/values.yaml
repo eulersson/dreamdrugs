@@ -13,3 +13,6 @@ domain: dreamdrugs.art
 # The images to deploy.
 backendImage: gcr.io/dreamdrugs/backend:0.1.0
 frontendImage: gcr.io/dreamdrugs/frontend:0.1.0
+
+# The environment for each component, either 'production' or 'development'.
+development: false
