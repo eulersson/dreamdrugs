@@ -1,4 +1,5 @@
 # dreamdrugs
+
 ![CI](https://github.com/docwhite/dreamdrugs/workflows/CI/badge.svg)
 [![codecov](https://codecov.io/gh/docwhite/dreamdrugs/branch/master/graph/badge.svg)](https://codecov.io/gh/docwhite/dreamdrugs)
 
@@ -8,8 +9,8 @@ It has in mind a plug-in structure that would allow developers to extend it.
 
 ## Development
 
-Two choices: ![Docker Compose](https://docs.docker.com/compose/) or
-![Skaffold](https://skaffold.dev). The former is recommended as it mirrors better the
+Two choices: [Docker Compose](https://docs.docker.com/compose/) or
+[Skaffold](https://skaffold.dev). The former is recommended as it mirrors better the
 production *Kubernetes* infrastructure.
 
 ### Docker Compose
@@ -24,7 +25,7 @@ Change to project root and run the following.
 docker-compose up
 ```
 
-Now you can visit ![](http://localhost).
+Now you can visit [](http://localhost).
 
 ### Skaffold
 
@@ -46,7 +47,7 @@ paste it to your browser using `http://`.
 
 ## Deployment
 
-This ![GitHub Workflow](.github/workflows/deploy.yaml) is already setup to handle
+This [GitHub Workflow](.github/workflows/deploy.yaml) is already setup to handle
 deployments on tag pushes.
 
 *Helm* is used for parametrizing the Kubernetes infrastructure and deploy it to *Google
