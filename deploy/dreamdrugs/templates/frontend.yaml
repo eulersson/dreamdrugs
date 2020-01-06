@@ -29,12 +29,16 @@ spec:
         - name: BACKEND_DOMAIN
           value: {{ template "dreamdrugs.fullname" . }}-backend
         - name: REDIS_HOST
-          value: 'redis-master.default.svc.cluster.local'
+          value: {{ .Release.Name }}-redis-master
         - name: REDIS_PASSWORD
+          {{ if .Values.development }}
+          value: {{ .Values.redis.password }}
+          {{ else }}
           valueFrom:
             secretKeyRef:
               name: redis
               key: redis-password
+          {{ end }}
 
 ---
 kind: Service

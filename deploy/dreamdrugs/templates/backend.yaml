@@ -15,33 +15,35 @@ spec:
         app: {{ template "dreamdrugs.fullname" . }}-backend
     spec:
       containers:
-        - name: backend
-          image: {{ .Values.backendImage }}
-          env:
-          # TODO: Investigate if we can get ride of this ENV if we already have DEBUG.
-          - name: ENV
-            {{ if .Values.development }}
-            value: 'development'
-            {{ else }}
-            value: 'production'
-            {{ end }}
-          - name: DEBUG
-            value: {{ if .Values.development }}'1'{{ else }}'0'{{ end }}
-          - name: FLASKPORT
-            value: '4000'
-          - name: GUNICORNPORT
-            value: '8000'
-          - name: PYTHONUNBUFFERED
-            value: '1'
-          - name: REDIS_HOST
-            value: 'redis-master.default.svc.cluster.local'
-          - name: REDIS_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: redis
-                key: redis-password
-          ports:
-          - containerPort: 8000
+      - name: backend
+        image: {{ .Values.backendImage }}
+        env:
+        # TODO: Investigate if we can get ride of this ENV if we already have DEBUG.
+        - name: ENV
+          {{ if .Values.development }}
+          value: 'development'
+          {{ else }}
+          value: 'production'
+          {{ end }}
+        - name: DEBUG
+          value: {{ if .Values.development }}'1'{{ else }}'0'{{ end }}
+        - name: BACKEND_PORT
+          value: '6000'
+        - name: PYTHONUNBUFFERED
+          value: '1'
+        - name: REDIS_HOST
+          value: {{ .Release.Name }}-redis-master
+        - name: REDIS_PASSWORD
+          {{ if .Values.redis.password }}
+          value: pass1234
+          {{ else }}
+          valueFrom:
+            secretKeyRef:
+              name: redis
+              key: redis-password
+          {{ end }}
+        ports:
+        - containerPort: 6000
 ---
 kind: Service
 apiVersion: v1
@@ -53,5 +55,5 @@ spec:
     app: {{ template "dreamdrugs.fullname" . }}-backend
   ports:
   - protocol: TCP
-    port: 8000
-    targetPort: 8000
+    port: 6000
+    targetPort: 6000

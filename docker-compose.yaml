@@ -11,6 +11,7 @@ services:
       - NODE_ENV=development
       - BACKEND_DOMAIN=backend
       - REDIS_HOST=database
+      - REDIS_PASSWORD=pass1234
 
   backend:
     restart: always
@@ -22,12 +23,14 @@ services:
       - ENV=development
       - PYTHONUNBUFFERED=1
       - DEBUG=1
-      - FLASKPORT=8000
+      - BACKEND_PORT=6000
       - REDIS_HOST=database
+      - REDIS_PASSWORD=pass1234
 
   database:
     restart: always
     image: redis
+    command: redis-server --requirepass pass1234
 
   nginx:
     restart: always

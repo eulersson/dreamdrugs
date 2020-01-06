@@ -3,6 +3,7 @@ kind: Config
 metadata:
   name: dreamdrugs
 build:
+  local: {}
   tagPolicy:
     sha256: {}
   artifacts:
@@ -10,15 +11,21 @@ build:
     context: backend
   - image: gcr.io/dreamdrugs/frontend
     context: frontend
+
+# Until skaffold doesn't support helm 3, let's use this user's build:
+#
+#   https://github.com/GoogleContainerTools/skaffold/issues/2142#issuecomment-570615439
+#
 deploy:
   helm:
-    flags:
-      upgrade:
-      - "--install"  # https://github.com/GoogleContainerTools/skaffold/issues/2142#issuecomment-553835849
     releases:
     - name: skaffold-helm
       chartPath: deploy/dreamdrugs
-      setValues:
+      values:
         backendImage: gcr.io/dreamdrugs/backend
         frontendImage: gcr.io/dreamdrugs/frontend
+      setValues:
         development: true
+      overrides:
+        redis:
+          password: pass1234

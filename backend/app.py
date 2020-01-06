@@ -7,7 +7,7 @@ from flask import Flask, request
 
 # Create globals based on received environment.
 ADDR = "0.0.0.0"
-PORT = int(os.getenv('FLASKPORT', '4000'))
+PORT = int(os.environ['BACKEND_PORT'])
 DEBUG = bool(int(os.getenv('DEBUG', '1')))
 LEVEL = logging.DEBUG if DEBUG else logging.INFO
 
