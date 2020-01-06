@@ -9,9 +9,17 @@ build:
   artifacts:
   - image: gcr.io/dreamdrugs/backend
     context: backend
+    sync:
+      infer:
+      - 'app.py'
+      - 'dreamdrugs/**/*.py'
+
   - image: gcr.io/dreamdrugs/frontend
     context: frontend
-
+    sync:
+      infer:
+      - 'src/**/*'
+      - 'server.js'
 # Until skaffold doesn't support helm 3, let's use this user's build:
 #
 #   https://github.com/GoogleContainerTools/skaffold/issues/2142#issuecomment-570615439
