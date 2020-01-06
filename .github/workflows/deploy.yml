@@ -76,7 +76,7 @@ jobs:
         sed -i 's/version: .*/version: '"$RELEASE_VERSION"'/' deploy/dreamdrugs/Chart.yaml
         sed -i 's/appVersion: .*/appVersion: '"$RELEASE_VERSION"'/' deploy/dreamdrugs/Chart.yaml
 
-        helm dependency update
+        helm dependency update deploy/dreamdrugs
 
         helm \
           upgrade \
