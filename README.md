@@ -47,7 +47,7 @@ paste it to your browser using `http://`.
 
 ## Deployment
 
-This [GitHub Workflow](.github/workflows/deploy.yaml) is already setup to handle
+This [GitHub Workflow](.github/workflows/deploy.yml) is already setup to handle
 deployments on tag pushes.
 
 *Helm* is used for parametrizing the Kubernetes infrastructure and deploy it to *Google
