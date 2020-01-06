@@ -52,3 +52,5 @@ deployments on tag pushes.
 
 *Helm* is used for parametrizing the Kubernetes infrastructure and deploy it to *Google
 Kubernetes Engine*.
+
+*TODO: Describe steps to deploy to custom GKE cluster.*
