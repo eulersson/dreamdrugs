@@ -10,7 +10,7 @@ RUN pip install --upgrade pip \
  && pip install --upgrade keyrings.alt \
  && pip install poetry \
  && poetry config virtualenvs.create false \
- && poetry install $(test "$ENV" = "production" && echo "--no-dev") --no-interaction
+ && poetry install $(test "$DEBUG" = "0" && echo "--no-dev") --no-interaction
 
 COPY . .
 

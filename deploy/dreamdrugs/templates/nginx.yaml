@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -16,19 +17,19 @@ spec:
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       containers:
-      - image: nginx:1.15.3-alpine
-        name: nginx
-        ports:
-        - name: http
-          containerPort: {{ .Values.hostPort }}
-          hostPort: {{ .Values.hostPort }}
-        volumeMounts:
-        - name: "config"
-          mountPath: "/etc/nginx"
+        - image: nginx:1.15.3-alpine
+          name: nginx
+          ports:
+            - name: http
+              containerPort: {{ .Values.hostPort }}
+              hostPort: {{ .Values.hostPort }}
+          volumeMounts:
+            - name: "config"
+              mountPath: "/etc/nginx"
       volumes:
-      - name: config
-        configMap:
-          name: {{ template "dreamdrugs.fullname" . }}-nginx-conf
+        - name: config
+          configMap:
+            name: {{ template "dreamdrugs.fullname" . }}-nginx-conf
 ---
 apiVersion: v1
 kind: ConfigMap

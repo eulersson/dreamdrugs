@@ -1,4 +1,16 @@
-{{ if not .Values.development }}
+---
+{{ if .Values.development }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ template "dreamdrugs.fullname" . }}-cloudflare-secret
+  labels:
+    app: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync
+type: Opaque
+data:
+  email: {{ .Values.cloudflare.email | b64enc | quote }}
+  api-key: {{ .Values.cloudflare.globalApiKey | b64enc | quote }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,37 +29,35 @@ spec:
     spec:
       serviceAccountName: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync
       containers:
-      - name: kubernetes-cloudflare-sync
-        image: gcr.io/dreamdrugs/kubernetes-cloudflare-sync
-        args:
-        - --dns-name=kubernetes.{{ .Values.domain }}
-        env:
-        - name: CF_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: cloudflare
-              key: api-key
-        - name: CF_API_EMAIL
-          valueFrom:
-            secretKeyRef:
-              name: cloudflare
-              key: email
+        - name: kubernetes-cloudflare-sync
+          image: gcr.io/dreamdrugs/kubernetes-cloudflare-sync
+          args:
+            - --dns-name=kubernetes.{{ .Values.domain }}
+          env:
+            - name: CF_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "dreamdrugs.fullname" . }}-cloudflare-secret
+                  key: api-key
+            - name: CF_API_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "dreamdrugs.fullname" . }}-cloudflare-secret
+                  key: email
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync
-imagePullSecrets:
-- name: pull-secret
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync
 rules:
-- apiGroups: [""]
-  resources: ["nodes"]
-  verbs: ["list", "watch"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["list", "watch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -58,7 +68,7 @@ roleRef:
   kind: ClusterRole
   name: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync
 subjects:
-- kind: ServiceAccount
-  name: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync
-  namespace: default
+  - kind: ServiceAccount
+    name: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync
+    namespace: default
 {{ end }}
