@@ -76,6 +76,8 @@ jobs:
         sed -i 's/version: .*/version: '"$RELEASE_VERSION"'/' deploy/dreamdrugs/Chart.yaml
         sed -i 's/appVersion: .*/appVersion: '"$RELEASE_VERSION"'/' deploy/dreamdrugs/Chart.yaml
 
+        helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+
         helm dependency update deploy/dreamdrugs
 
         helm upgrade --install dreamdrugs deploy/dreamdrugs \
