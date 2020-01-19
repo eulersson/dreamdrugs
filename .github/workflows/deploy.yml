@@ -81,7 +81,7 @@ jobs:
         sed -i 's/version: .*/version: '"$RELEASE_VERSION"'/' deploy/dreamdrugs/Chart.yaml
         sed -i 's/appVersion: .*/appVersion: '"$RELEASE_VERSION"'/' deploy/dreamdrugs/Chart.yaml
 
-        echo Deploying it all to GKE.
+        echo Deploying it all to GKE. $CLOUDFLARE_EMAIL $CLOUDFLARE_GLOBAL_API_KEY
         helm upgrade --install dreamdrugs deploy/dreamdrugs \
           --set backendImage=gcr.io/"$GKE_PROJECT"/backend:"$GITHUB_SHA" \
           --set frontendImage=gcr.io/"$GKE_PROJECT"/frontend:"$GITHUB_SHA" \
