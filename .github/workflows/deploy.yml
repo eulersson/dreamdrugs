@@ -33,31 +33,31 @@ jobs:
     - name: Configure docker to use gcloud command-line tool as a credential helper
       run: gcloud auth configure-docker
 
-    - name: Build backend
-      run: |
-        docker \
-          build \
-          -t gcr.io/"$GKE_PROJECT"/backend:"$RELEASE_VERSION" \
-          -t gcr.io/"$GKE_PROJECT"/backend:"$GITHUB_SHA" \
-          ./backend
+    #- name: Build backend
+    #  run: |
+    #    docker \
+    #      build \
+    #      -t gcr.io/"$GKE_PROJECT"/backend:"$RELEASE_VERSION" \
+    #      -t gcr.io/"$GKE_PROJECT"/backend:"$GITHUB_SHA" \
+    #      ./backend
 
-    - name: Build frontend
-      run: |
-        docker \
-          build \
-          -t gcr.io/"$GKE_PROJECT"/frontend:"$RELEASE_VERSION" \
-          -t gcr.io/"$GKE_PROJECT"/frontend:"$GITHUB_SHA" \
-          ./frontend
+    #- name: Build frontend
+    #  run: |
+    #    docker \
+    #      build \
+    #      -t gcr.io/"$GKE_PROJECT"/frontend:"$RELEASE_VERSION" \
+    #      -t gcr.io/"$GKE_PROJECT"/frontend:"$GITHUB_SHA" \
+    #      ./frontend
 
-    - name: Push backend container
-      run: |
-        docker push gcr.io/$GKE_PROJECT/backend:"$RELEASE_VERSION"
-        docker push gcr.io/"$GKE_PROJECT"/backend:"$GITHUB_SHA"
+    #- name: Push backend container
+    #  run: |
+    #    docker push gcr.io/$GKE_PROJECT/backend:"$RELEASE_VERSION"
+    #    docker push gcr.io/"$GKE_PROJECT"/backend:"$GITHUB_SHA"
 
-    - name: Push frontend container
-      run: |
-        docker push gcr.io/$GKE_PROJECT/frontend:"$RELEASE_VERSION"
-        docker push gcr.io/"$GKE_PROJECT"/frontend:"$GITHUB_SHA"
+    #- name: Push frontend container
+    #  run: |
+    #    docker push gcr.io/$GKE_PROJECT/frontend:"$RELEASE_VERSION"
+    #    docker push gcr.io/"$GKE_PROJECT"/frontend:"$GITHUB_SHA"
 
     - name: Set up Helm
       run: |

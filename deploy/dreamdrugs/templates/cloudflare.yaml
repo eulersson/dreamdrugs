@@ -7,8 +7,8 @@ metadata:
     app: {{ template "dreamdrugs.fullname" . }}-kubernetes-cloudflare-sync
 type: Opaque
 data:
-  email: {{ .Values.cloudflare.email | b64enc | quote }}
-  globalApiKey: {{ .Values.cloudflare.globalApiKey | b64enc | quote }}
+  email: {{ include "cloudflare.email" . | b64enc | quote }}
+  globalApiKey: {{ include "cloudflare.globalApiKey" | b64enc | quote }}
 ---
 apiVersion: apps/v1
 kind: Deployment
