@@ -37,3 +37,9 @@ deploy:
       overrides:
         redis:
           password: pass1234
+          master:
+            persistence:
+              enabled: false
+          slave:
+            persistence:
+              enabled: false

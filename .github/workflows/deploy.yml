@@ -85,7 +85,8 @@ jobs:
         helm upgrade --install dreamdrugs deploy/dreamdrugs \
           --set backendImage=gcr.io/"$GKE_PROJECT"/backend:"$GITHUB_SHA" \
           --set frontendImage=gcr.io/"$GKE_PROJECT"/frontend:"$GITHUB_SHA" \
-          --set redis.persistence=false \
+          --set redis.master.persistence=false \
+          --set redis.slave.persistence=false \
           --set redis.password=$REDIS_PASSWORD \
           --set cloudflare.email=$CLOUDFLARE_EMAIL \
           --set cloudflare.globalApiKey=$CLOUDFLARE_GLOBAL_API_KEY
