@@ -25,17 +25,6 @@ spec:
           volumeMounts:
             - name: "config"
               mountPath: "/etc/nginx"
-          env:
-            - name: CF_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "dreamdrugs.fullname" . }}-cloudflare-secret
-                  key: globalApiKey
-            - name: CF_API_EMAIL
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "dreamdrugs.fullname" . }}-cloudflare-secret
-                  key: email
       volumes:
         - name: config
           configMap:
