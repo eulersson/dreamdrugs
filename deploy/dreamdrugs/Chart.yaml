@@ -23,4 +23,4 @@ appVersion: 0.1.0
 dependencies:
   - name: redis
     version: 10.3.4
-    repository: https://kubernetes-charts.storage.googleapis.com/
+    repository: "@stable"
