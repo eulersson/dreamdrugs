@@ -82,7 +82,7 @@ jobs:
 
         helm dependency update deploy/dreamdrugs
 
-        helm search repo redis
+        helm search repo stable
 
         helm upgrade --install dreamdrugs deploy/dreamdrugs \
           --set backendImage=gcr.io/"$GKE_PROJECT"/backend:"$GITHUB_SHA" \
