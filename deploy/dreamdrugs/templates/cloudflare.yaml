@@ -8,7 +8,7 @@ metadata:
 type: Opaque
 data:
   email: {{ .Values.cloudflare.email | b64enc | quote }}
-  api-key: {{ .Values.cloudflare.globalApiKey | b64enc | quote }}
+  globalApiKey: {{ .Values.cloudflare.globalApiKey | b64enc | quote }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -37,7 +37,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ template "dreamdrugs.fullname" . }}-cloudflare-secret
-                  key: api-key
+                  key: globalApiKey
             - name: CF_API_EMAIL
               valueFrom:
                 secretKeyRef:
