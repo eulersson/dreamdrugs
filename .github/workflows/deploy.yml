@@ -61,10 +61,15 @@ jobs:
 
     - name: Set up Helm
       run: |
-        curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 \
-          > get_helm.sh
+        curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
         chmod 700 get_helm.sh
         ./get_helm.sh
+
+        echo Adding stable repository.
+        helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+
+        echo Searching stable repository to test it all works.
+        helm search repo stable
 
     - name: Deploy
       run: |
@@ -76,15 +81,7 @@ jobs:
         sed -i 's/version: .*/version: '"$RELEASE_VERSION"'/' deploy/dreamdrugs/Chart.yaml
         sed -i 's/appVersion: .*/appVersion: '"$RELEASE_VERSION"'/' deploy/dreamdrugs/Chart.yaml
 
-        helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-
-        curl https://kubernetes-charts.storage.googleapis.com/
-
-        helm repo update
-
         helm dependency update deploy/dreamdrugs
-
-        helm search repo stable
 
         helm upgrade --install dreamdrugs deploy/dreamdrugs \
           --set backendImage=gcr.io/"$GKE_PROJECT"/backend:"$GITHUB_SHA" \
