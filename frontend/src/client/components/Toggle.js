@@ -18,8 +18,8 @@ function Toggle(props) {
 }
 
 Toggle.propTypes = {
-  switch: PropTypes.bool,
-  onChange: PropTypes.func
+  switch: PropTypes.bool.isRequired,
+  onChange: PropTypes.func.isRequired
 };
 
 export default Toggle;

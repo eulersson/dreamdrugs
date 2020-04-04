@@ -12,11 +12,6 @@ class Progress extends React.Component {
     loaded: false
   };
 
-  propTypes = {
-    jobId: PropTypes.number.isRequired,
-    onLoaded: PropTypes.func.isRequired
-  };
-
   componentDidMount() {
     const jobId = `${this.props.jobId}`;
     console.log(`Job ID to check against is ${this.props.jobId}`);
@@ -55,5 +50,10 @@ class Progress extends React.Component {
     );
   }
 }
+
+Progress.propTypes = {
+  jobId: PropTypes.number.isRequired,
+  onLoaded: PropTypes.func.isRequired
+};
 
 export default Progress;

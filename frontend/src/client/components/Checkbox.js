@@ -14,8 +14,8 @@ function Checkbox(props) {
 }
 
 Checkbox.propTypes = {
-  name: PropTypes.string,
-  prettyName: PropTypes.string
+  name: PropTypes.string.isRequired,
+  prettyName: PropTypes.string.isRequired
 };
 
 export default Checkbox;
