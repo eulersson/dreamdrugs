@@ -251,6 +251,7 @@ class App extends React.Component {
               signature={this.state.signature}
               parameters={this.state.parameters}
               setParameters={this.setParameters}
+              onModelChanged={this.onModelChanged}
             />
           )}
           {mode !== "posing" && (

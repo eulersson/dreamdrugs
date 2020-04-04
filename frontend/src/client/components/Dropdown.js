@@ -55,12 +55,12 @@ class Dropdown extends React.Component {
 }
 
 Dropdown.propTypes = {
-  choices: PropTypes.array,
-  initial: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  name: PropTypes.string,
+  choices: PropTypes.array.isRequired,
+  initial: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  name: PropTypes.string.isRequired,
   onChange: PropTypes.func,
-  optional: PropTypes.bool,
-  prettyName: PropTypes.string
+  optional: PropTypes.bool.isRequired,
+  prettyName: PropTypes.string.isRequired
 };
 
 export default Dropdown;

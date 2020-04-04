@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 import "./Parameters.css";
 
@@ -74,6 +75,7 @@ class Parameters extends React.Component {
           .map(item => item.charAt(0).toUpperCase() + item.slice(1))
           .join(" ");
       }
+
       return (
         <Widget
           prettyName={prettify(parameterName)}
@@ -101,6 +103,15 @@ class Parameters extends React.Component {
       </div>
     );
   }
+}
+
+Parameters.propTypes = {
+  model: PropTypes.string.isRequired,
+  models: PropTypes.arrayOf(PropTypes.string).isRequired,
+  onModelChanged: PropTypes.func,
+  parameters: PropTypes.object.isRequired,
+  setParameters: PropTypes.func,
+  signature: PropTypes.object.isRequired
 }
 
 export default Parameters;

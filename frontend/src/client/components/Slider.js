@@ -54,12 +54,12 @@ class Slider extends React.Component {
 }
 
 Slider.propTypes = {
-  initial: PropTypes.number,
-  name: PropTypes.string,
-  prettyName: PropTypes.string,
-  onChange: PropTypes.func,
-  range: PropTypes.arrayOf(PropTypes.number),
-  type: PropTypes.oneOf(["int", "float"])
+  initial: PropTypes.number.isRequired,
+  name: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  prettyName: PropTypes.string.isRequired,
+  range: PropTypes.arrayOf(PropTypes.number).isRequired,
+  type: PropTypes.oneOf(["int", "float"]).isRequired
 };
 
 export default Slider;
