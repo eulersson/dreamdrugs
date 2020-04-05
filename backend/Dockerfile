@@ -4,7 +4,7 @@ WORKDIR /dreamdrugs/backend
 
 COPY poetry.lock pyproject.toml ./
 
-RUN apt update && apt install -y curl
+RUN apt update && apt install -y curl socat rlwrap
 
 RUN pip install --upgrade pip \
  && pip install --upgrade keyrings.alt \
