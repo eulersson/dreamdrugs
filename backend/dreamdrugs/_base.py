@@ -6,10 +6,10 @@ import random
 from dreamdrugs.validators import ValidationError
 
 import redis
-redis_client = redis.StrictRedis(
-    host=os.environ['REDIS_HOST'],
-    password=os.environ['REDIS_PASSWORD']
-)
+# # redis_client = redis.StrictRedis(
+#     host=os.environ['REDIS_HOST'],
+#     password=os.environ['REDIS_PASSWORD']
+# )
 
 
 class JobCancelled(Exception):
@@ -22,7 +22,7 @@ def cancel_job(job_id):
     """
     Sets a flag so from the model itself we can know whether to carry on or not.
     """
-    redis_client.set('CANCEL_{}'.format(job_id), 1)
+    # # redis_client.set('CANCEL_{}'.format(job_id), 1)
 
 
 class Model(metaclass=abc.ABCMeta):
@@ -101,22 +101,22 @@ class Model(metaclass=abc.ABCMeta):
         Called from the model to let the frontend know about progress updates.
         """
         self.progress = progress
-        redis_client.publish(str(self.job_id), int(round(progress, 0)))
+        # redis_client.publish(str(self.job_id), int(round(progress, 0)))
 
     def notify_error(self, msg):
         """
         Tell all the subscribed clients the computation failed.
         """
-        redis_client.publish(str(self.job_id), 'FAILED %s' % msg)
+        # redis_client.publish(str(self.job_id), 'FAILED %s' % msg)
 
     def notify_finished(self):
         """
         Tell all the subscribed clients the computation finished with success.
         """
-        redis_client.publish(str(self.job_id), 'FINISHED')
+        # redis_client.publish(str(self.job_id), 'FINISHED')
 
     def is_cancelled(self):
-        return bool(redis_client.get('CANCEL_{}'.format(self.job_id)))
+        return False # bool(# redis_client.get('CANCEL_{}'.format(self.job_id)))
 
     @abc.abstractmethod
     def run(self, *args, **kwargs):

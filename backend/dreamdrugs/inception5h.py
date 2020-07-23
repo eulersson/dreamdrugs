@@ -204,16 +204,16 @@ class Inception5hModel(Model):
 
         return img_result
 
-    @Model.accepts(
-        blend=FloatBetween(0.0, 1.0),
-        depth_level=IntBetween(1, 10),
-        feature_channel=IntOneOf(5, 6, 8, optional=True),
-        layer_name=StringOneOf('mixed4a', 'mixed4b'),
-        num_iterations=IntBetween(1, 60),
-        rescale_factor=FloatBetween(0.1, 0.9),
-        squared=IsBoolean(),
-        step_size=FloatBetween(0.0, 5.0),
-    )
+    # @Model.accepts(
+    #     blend=FloatBetween(0.0, 1.0),
+    #     depth_level=IntBetween(1, 10),
+    #     feature_channel=IntOneOf(5, 6, 8, optional=True),
+    #     layer_name=StringOneOf('mixed4a', 'mixed4b'),
+    #     num_iterations=IntBetween(1, 60),
+    #     rescale_factor=FloatBetween(0.1, 0.9),
+    #     squared=IsBoolean(),
+    #     step_size=FloatBetween(0.0, 5.0),
+    # )
     def run(
         self,
         impath,
@@ -225,6 +225,7 @@ class Inception5hModel(Model):
         rescale_factor=0.7,
         squared=True,
         step_size=1.5,
+        out_path=None
     ):
         """
         Entry point to the algorithm. This is the method to be run from the
@@ -278,6 +279,6 @@ class Inception5hModel(Model):
             step_size=step_size,
         )
 
-        out_path = '/uploads/%s.jpg' % self.job_id
+        out_path = out_path or '/uploads/%s.jpg' % self.job_id
         image_from_array(result).save(out_path)
         self.notify_finished()
