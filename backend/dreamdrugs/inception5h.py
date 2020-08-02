@@ -20,6 +20,7 @@ from dreamdrugs.validators import (
 import logging
 
 log = logging.getLogger('dreamdrugs')
+log.setLevel(logging.DEBUG)
 
 # Where to download the model from.
 model_url = (
@@ -60,7 +61,7 @@ class Inception5hModel(Model):
             if not os.path.exists(target_zip_path):
                 # Report download progress. Args: count, block_size, total_size.
                 def hook(c, b_s, t_s):
-                    log.debug("Progress: {:.1%}".format(float(c * b_s) / t_s))
+                    print("Progress: {:.1%}".format(float(c * b_s) / t_s))
 
                 file_path, _ = urllib.request.urlretrieve(
                     model_url, target_zip_path, hook
@@ -138,7 +139,7 @@ class Inception5hModel(Model):
             percentage = iters_completed / float(total_num_iters) * 100.0
             self.update_progress(percentage)
 
-            log.debug(
+            print(
                 "%d%% | Octave %d/%d | Iteration %d/%d"
                 % (percentage, current_octave, num_octaves, it, num_iterations)
             )
@@ -178,6 +179,7 @@ class Inception5hModel(Model):
             sigma = 0.5
             img_blur = gaussian_filter(image, sigma=(sigma, sigma, 0.0))
             img_downscaled = resize_image(img_blur, factor=rescale_factor)
+            num_iterations = int(num_iterations + ((total_depth - depth_level) / total_depth) * 3 * num_iterations)
             img_result = self.recursive_optimize(
                 img_downscaled,
                 gradient,

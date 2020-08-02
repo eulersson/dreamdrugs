@@ -17,7 +17,7 @@ def setup_logging(level):
         logging.Logger: An initialized logger.
     """
     log = logging.getLogger('dreamdrugs')
-    log.setLevel(level)
+    log.setLevel(logging.DEBUG)
 
     fmt = logging.Formatter(
         '%(asctime)s [%(name)s] %(levelname)s - '
