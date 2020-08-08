@@ -55,7 +55,7 @@ app.use(express.urlencoded({ extended: true }));
 // Setup webpack and live reloading if in dev mode.
 if (isDev) {
   const webpack = require("webpack");
-  const webpackConfig = require("./webpack.config")();
+  const webpackConfig = require("./webpack.config");
   const webpackCompiler = webpack(webpackConfig);
   app.use(require("webpack-dev-middleware")(webpackCompiler, {}));
   app.use(require("webpack-hot-middleware")(webpackCompiler));
