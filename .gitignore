@@ -1,2 +1,6 @@
 .DS_Store
-deploy/dreamdrugs/charts/*
+
+backend/.python-version
+backend/dreamdrugs.egg-info/
+
+deploy/dreamdrugs/charts/
