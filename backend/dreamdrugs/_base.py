@@ -35,9 +35,10 @@ class Model(metaclass=abc.ABCMeta):
             frontend has in order to retrieve progress updates.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, progress_callback=None, **kwargs):
         self.progress = 0
         self.job_id = random.randint(0, 999)  # TODO: Use sequencial instead.
+        self.progress_callback = progress_callback
 
     @staticmethod
     def accepts(**validators):
@@ -102,6 +103,9 @@ class Model(metaclass=abc.ABCMeta):
         """
         self.progress = progress
         redis_client.publish(str(self.job_id), int(round(progress, 0)))
+
+        if self.progress_callback:
+            self.progress_callback(self.job_id, self.progress)
 
     def notify_error(self, msg):
         """
