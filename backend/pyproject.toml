@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dreamdrugs"
-version = "0.1.0"
+version = "0.2.0"
 description = "Deep dreaming on a Raspberry Pi"
 authors = ["Ramon Blanquer <blanquer.ramon@gmail.com>"]
 
