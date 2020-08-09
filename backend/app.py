@@ -1,6 +1,8 @@
+import base64
 import json
 import logging
 import os
+import io
 import threading
 
 from flask import Flask, request
@@ -46,19 +48,30 @@ def dream():
     the parameters of the algorithm a frontend.
     """
     # Data from POST request as JSON.
-    data = request.get_json()
-    log.warn(data)
+    form_data = dict(request.form)
+    log.debug(form_data)
+
+    # Get parameters to be passed to the algorithm.
+    parameters = json.loads(request.files['parameters'].read())
+
+    def progress_callback(job_id, progress):
+        pass
 
     # Get the model instance and image path.
-    model = MODELS[data.pop('model')]()
-    input_image_path = data.pop('image')
+    model = MODELS[form_data['model']](progress_callback=progress_callback)
+
+    input_image = io.BytesIO()
+    request.files['image'].save(input_image)
 
     def calculate(**kwargs):
         try:
-            model.run(input_image_path, **data)
+            model.run(input_image, **parameters)
         except JobCancelled:
-            model.notify_error('Job has been cancelled.')
+            message = 'Job has been cancelled.'
+            log.error(message)
+            model.notify_error(message)
         except Exception as e:
+            log.exception("Errors happened while dreaming.")
             model.notify_error(str(e))
 
     # Run on a thread so it does not block.
@@ -84,7 +97,13 @@ def result(job_id):
     """
     Given a job ID it returns the image it generated.
     """
-    return '/uploads/%s.jpg' % job_id
+    image_path = f"/uploads/{job_id}.jpg"
+
+    with open(image_path, 'rb') as f:
+        result = base64.b64encode(f.read()).decode()
+
+    os.remove(image_path)
+    return result
 
 
 @app.route('/cancel/<job_id>', methods=['POST'])

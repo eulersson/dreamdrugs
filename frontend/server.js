@@ -26,6 +26,7 @@ io.on("connection", socket => {
   socket.on("greet", jobId => {
     // Add the socket to a global object so we can keep track of it and send
     // progress information through it every time redis pulls messages.
+    console.log(`Socket identified itself as Job ID's ${jobId}, storing it...`)
     websockets[jobId] = socket;
   });
 });
@@ -132,6 +133,11 @@ app.get("/signature/:model", (req, res) => {
     .get(`http://${BACKEND_DOMAIN}:6000/signature/${req.param("model")}`)
     .then(response => res.json(response.data))
     .catch(err => console.error(err));
+});
+
+app.post("/subscribe/progress/:jobId", (req, res) => {
+  console.log(`Subscribing to progress of job ${req.param("jobId")}`);
+  client.subscribe(req.param("jobId"));
 });
 
 app.post("/cancel/:jobId", (req, res) => {

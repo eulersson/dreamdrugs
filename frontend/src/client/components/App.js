@@ -16,7 +16,7 @@ class App extends React.Component {
     // Resulting image path returned from the backend.
     impath: "",
     // Job ID of the task running on the backend.
-    jid: undefined,
+    jobId: undefined,
     // Shows the settings for parameter tweaking.
     showSettings: false,
     // Whether to show camera view or parameters view.
@@ -60,12 +60,14 @@ class App extends React.Component {
     axios
       .get(`/signature/${this.state.currentModel}`)
       .then(res => {
-        console.log(res);
+        console.log("Signature response:", res);
         this.setState({ signature: res.data });
+
         const parameters = {};
         Object.keys(res.data).forEach(
           p => (parameters[p] = res.data[p].default)
         );
+
         if (Object.keys(this.state.parameters).length === 0) {
           this.setParameters(this.state.currentModel, parameters);
         }
@@ -106,40 +108,47 @@ class App extends React.Component {
   // Takes a picture and posts it to the server. The job id is returned so we
   // can retrieve progress udpates via redis.
   onSnap() {
-    // TODO: Review.
     this.refs.videoRef.pause();
     const canvas = document.createElement("canvas");
     canvas.width = this.refs.videoRef.videoWidth;
     canvas.height = this.refs.videoRef.videoHeight;
     canvas.getContext("2d").drawImage(this.refs.videoRef, 0, 0);
-    const encodedImage = canvas.toDataURL("image/jpg");
 
-    axios
-      .post("/snap", {
-        image: encodedImage,
-        parameters: {
-          ...this.state.parameters,
-          model: this.state.currentModel
-        }
-      })
-      .then(res => {
-        this.setState({
-          jid: res.data.body
-        });
-      })
-      .catch(err => console.error(err));
+    const encodedImage = canvas
+      .toDataURL("image/jpeg")
+      .replace(/^data:image\/jpeg;base64,/, "");
+
+    const binaryImage = canvas.toBlob(blob => {
+      const formData = new FormData();
+
+      formData.append("image", blob, "image.jpg");
+      formData.append("model", this.state.currentModel);
+      formData.append(
+        "parameters",
+        new Blob([JSON.stringify(this.state.parameters)], {
+          type: "application/json"
+        })
+      );
+
+      axios
+        .post("/api/dream", formData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        })
+        .then(res => this.setState({ jobId: res.data }) || res.data)
+        .then(jobId => axios.post(`/subscribe/progress/${jobId}`));
+    }, "image/jpeg");
   }
 
   // Brings back user to camera mode.
   onTryAgain() {
-    this.setState({ jid: "", dreamt: false });
+    this.setState({ jobId: "", dreamt: false });
     this.refs.videoRef.play();
   }
 
   // When a job started it is possible to cancel it.
   onCancel() {
-    axios.post(`/cancel/${this.state.jid}`).then(res => {
-      this.setState({ jid: "", dreamt: false });
+    axios.post(`/cancel/${this.state.jobId}`).then(res => {
+      this.setState({ jobId: "", dreamt: false });
       this.refs.videoRef.play();
       // TODO: Make sure the Progress component unsubscribes before it dies.
     });
@@ -190,7 +199,7 @@ class App extends React.Component {
     let buttonCallback;
 
     let mode; // Can be either posing, calculating or dreamt.
-    if (this.state.jid) {
+    if (this.state.jobId) {
       mode = this.state.dreamt ? "dreamt" : "calculating";
     } else {
       mode = "posing";
@@ -198,7 +207,7 @@ class App extends React.Component {
 
     switch (mode) {
       case "posing":
-        buttonText = "Snap";
+        buttonText = `Snap`;
         buttonClasses = "button snap";
         buttonCallback = () => this.onSnap();
         break;
@@ -257,9 +266,8 @@ class App extends React.Component {
           {mode !== "posing" && (
             <Progress
               onLoaded={() => this.setState({ dreamt: true })}
-              jobId={this.state.jid}
+              jobId={this.state.jobId}
             >
-              <img alt="deep" src={`/uploads/${this.state.jid}.jpg`} />
             </Progress>
           )}
           <video

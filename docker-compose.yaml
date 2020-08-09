@@ -4,7 +4,6 @@ services:
     restart: always
     build: ./frontend
     volumes:
-      - image-uploads:/uploads
       - ./frontend:/dreamdrugs/frontend
       - /dreamdrugs/frontend/node_modules
     environment:
@@ -17,10 +16,8 @@ services:
     restart: always
     build: ./backend
     volumes:
-      - image-uploads:/uploads
       - ./backend:/dreamdrugs/backend
     environment:
-      - ENV=development
       - PYTHONUNBUFFERED=1
       - DEBUG=1
       - BACKEND_PORT=6000
@@ -33,15 +30,14 @@ services:
     command: redis-server --requirepass pass1234
 
   nginx:
+    image: nginx:alpine
     restart: always
-    build: ./nginx
     ports:
-      - "80:80"
+      - 80:80
+      - 443:443
     links:
       - backend
       - frontend
     volumes:
-      - image-uploads:/uploads
-
-volumes:
-  image-uploads:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./certificate-generation.sh:/docker-entrypoint.d/certificate-generation.sh

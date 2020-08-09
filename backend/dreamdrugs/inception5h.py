@@ -47,9 +47,9 @@ class Inception5hModel(Model):
         input_image_tensor (tf.Tensor): Where we feed all the image data to.
     """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         # Call the superclass method that initializes job id.
-        super(Inception5hModel, self).__init__()
+        super(Inception5hModel, self).__init__(*args, **kwargs)
 
         # Downloads the model if not existing.
         if not os.path.exists(model_subfolder):
@@ -216,7 +216,7 @@ class Inception5hModel(Model):
     )
     def run(
         self,
-        impath,
+        image,
         blend=0.2,
         depth_level=3,
         feature_channel=None,
@@ -232,7 +232,7 @@ class Inception5hModel(Model):
         on it and generate a resulting one and return it's path.
 
         Arguments:
-            impath (str): Path-like. Input image path.
+            image (io.BytesIO): Image data (image/jpeg) in bytes form.
             blend (float, optional): How much of the previous image (higher
                 octave, larger resolution) to preserve. 1.0 will not preserve
                 any effect from the higher octave and 0.0 otherwise.
@@ -252,7 +252,7 @@ class Inception5hModel(Model):
         Returns:
             str: Path-like of the resulting image. Carries job id in its name.
         """
-        image = load_image(impath)
+        image = load_image(image)
 
         with self.graph.as_default():
             layer_tensor = self.graph.get_tensor_by_name('import/%s:0' % layer_name)

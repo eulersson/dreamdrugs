@@ -20,10 +20,6 @@ build:
       infer:
       - 'src/**/*'
       - 'server.js'
-# Until skaffold doesn't support helm 3, let's use this user's build:
-#
-#   https://github.com/GoogleContainerTools/skaffold/issues/2142#issuecomment-570615439
-#
 deploy:
   helm:
     releases:

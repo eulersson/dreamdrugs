@@ -1,6 +1,3 @@
-# What port should the application load balancer serve on.
-hostPort: 80
-
 # The GCE project. The GCR images must live under that namespace.
 projectId: dreamdrugs
 

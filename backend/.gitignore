@@ -4,5 +4,6 @@
 backend.log
 dev.py
 
+env/
 htmlcov/
 inception5h/
