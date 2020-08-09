@@ -1,4 +1,5 @@
 import io from "socket.io-client";
+import axios from "axios";
 
 import React from "react";
 import PropTypes from "prop-types";
@@ -9,7 +10,7 @@ import "./Progress.css";
 class Progress extends React.Component {
   state = {
     progress: 0,
-    loaded: false
+    image_data: ""
   };
 
   componentDidMount() {
@@ -23,7 +24,9 @@ class Progress extends React.Component {
     socket.on(jobId, progress => {
       console.log(`Progress for ${jobId} is ${progress}`);
       if (progress === "FINISHED") {
-        this.setState({ loaded: true });
+        axios.get(`/api/result/${jobId}`).then(res => {
+          this.setState({ image_data: `data:image/jpeg;base64,${res.data}`})
+        });
         this.props.onLoaded();
       } else {
         this.setState({ progress });
@@ -36,8 +39,8 @@ class Progress extends React.Component {
   }
 
   render() {
-    return this.state.loaded ? (
-      this.props.children /* eslint-disable-line react/prop-types */
+    return this.state.image_data ? (
+      <img alt="deep" src={this.state.image_data} />
     ) : (
       <div
         className="Progress"

@@ -1,3 +1,4 @@
+import base64
 import json
 import logging
 import os
@@ -96,7 +97,13 @@ def result(job_id):
     """
     Given a job ID it returns the image it generated.
     """
-    return '/uploads/%s.jpg' % job_id
+    image_path = f"/uploads/{job_id}.jpg"
+
+    with open(image_path, 'rb') as f:
+        result = base64.b64encode(f.read()).decode()
+
+    os.remove(image_path)
+    return result
 
 
 @app.route('/cancel/<job_id>', methods=['POST'])

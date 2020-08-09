@@ -268,7 +268,6 @@ class App extends React.Component {
               onLoaded={() => this.setState({ dreamt: true })}
               jobId={this.state.jobId}
             >
-              <img alt="deep" src={`/uploads/${this.state.jobId}.jpg`} />
             </Progress>
           )}
           <video

@@ -12,6 +12,8 @@ RUN pip install --upgrade pip \
  && poetry config virtualenvs.create false \
  && poetry install $(test "$DEBUG" = "0" && echo "--no-dev") --no-interaction
 
+RUN mkdir /uploads
+
 COPY . .
 
 CMD ./run.sh
