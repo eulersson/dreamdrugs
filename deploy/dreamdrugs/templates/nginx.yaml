@@ -48,7 +48,7 @@ data:
     error_log /dev/stdout info;
 
     events {
-      worker_connections 10;
+      worker_connections 1024;
     }
 
     http {
@@ -68,11 +68,11 @@ data:
         ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
         {{ end }}
 
-        location /api {
+        location /api/ {
           proxy_pass http://{{ template "dreamdrugs.fullname" . }}-backend:6000/;
         }
 
-        location /socket.io {
+        location /socket.io/ {
           # Configuration needed for socket.io to work.
           #
           #     https://www.nginx.com/blog/nginx-nodejs-websockets-socketio/
@@ -84,11 +84,12 @@ data:
           proxy_set_header Upgrade $http_upgrade;
           proxy_set_header Connection "upgrade";
 
-          proxy_pass http://{{ template "dreamdrugs.fullname" . }}-frontend:3030/;
+
+          proxy_pass http://{{ template "dreamdrugs.fullname" . }}-frontend:3000;
         }
 
         location / {
-          proxy_pass http://{{ template "dreamdrugs.fullname" . }}-frontend:3030/;
+          proxy_pass http://{{ template "dreamdrugs.fullname" . }}-frontend:3000;
         }
       }
     }
