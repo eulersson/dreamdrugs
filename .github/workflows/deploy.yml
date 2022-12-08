@@ -29,7 +29,6 @@ jobs:
       name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v1
       with:
-        token_format: access_token
         credentials_json: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
 
     # Install gcloud, `setup-gcloud` automatically picks up authentication from `auth`.
