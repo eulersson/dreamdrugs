@@ -13,6 +13,11 @@ spec:
       labels:
         app: {{ template "dreamdrugs.fullname" . }}-nginx
     spec:
+      # TODO: (review) I believe with the container image ports hostNetwork and
+      # dnsPolicy is not needed.
+      #
+      #   https://lambda.mu/hostports_and_hostnetwork/
+      #
       # hostNetwork: true
       # dnsPolicy: ClusterFirstWithHostNet
       containers:
