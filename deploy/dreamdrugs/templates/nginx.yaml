@@ -1,3 +1,4 @@
+{{ if not .Values.ingress }}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -116,3 +117,4 @@ data:
     rm /etc/ssl/private/selfsigned.pass.key
     openssl req -new -key /etc/ssl/private/selfsigned.key -out /etc/ssl/selfsigned.csr -subj "/C=ES/ST=Barcelona/L=Barcelona/O=dreamdrugs/OU=IT Department/CN=dreamdrugs"
     openssl x509 -req -days 365 -in /etc/ssl/selfsigned.csr -signkey /etc/ssl/private/selfsigned.key -out /etc/ssl/certs/selfsigned.crt
+{{ end }}

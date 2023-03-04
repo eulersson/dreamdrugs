@@ -13,3 +13,6 @@ frontendImage: gcr.io/dreamdrugs/frontend:0.1.0
 
 # The environment for each component, either 'production' or 'development'.
 development: false
+
+# Deploys ingress.
+ingress: true 
