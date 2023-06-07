@@ -3,6 +3,8 @@
 ![CI](https://github.com/docwhite/dreamdrugs/workflows/CI/badge.svg)
 [![codecov](https://codecov.io/gh/docwhite/dreamdrugs/branch/master/graph/badge.svg)](https://codecov.io/gh/docwhite/dreamdrugs)
 
+![Teaser](dreamdrugs-anim.gif)
+
 A psychedelic imagery generation playground.
 
 It has in mind a plug-in structure that would allow developers to extend it.
