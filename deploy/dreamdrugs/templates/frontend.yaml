@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "dreamdrugs.fullname" . }}-frontend
+  labels:
+    app: {{ template "dreamdrugs.fullname" . }}-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "dreamdrugs.fullname" . }}-frontend
+  template:
+    metadata:
+      labels:
+        app: {{ template "dreamdrugs.fullname" . }}-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: {{ .Values.frontendImage }}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: {{ ternary "development" "production" .Values.development | quote }}
+            - name: BACKEND_DOMAIN
+              value: {{ template "dreamdrugs.fullname" . }}-backend
+            - name: REDIS_HOST
+              value: {{ .Release.Name }}-redis-master
+            - name: REDIS_PASSWORD
+              value: {{ .Values.redis.password }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "dreamdrugs.fullname" . }}-frontend
+spec:
+  type: NodePort
+  selector:
+    app: {{ template "dreamdrugs.fullname" . }}-frontend
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000

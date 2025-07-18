@@ -1,0 +1,111 @@
+html, body {
+  font-family: Helvetica;
+	margin: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.button {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  border: none;
+  border-radius: 15px;
+  transition: 0.4s;
+}
+
+.show {
+  visibility: visible;
+  opacity: 1;
+}
+.hide {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.button.hide {
+  transform: translateY(-50px);
+}
+
+.button:active {
+  transform: translateY(4px);
+}
+
+.button.snap {
+  background-color: #4caf50;
+  box-shadow: 0 9px #446644;
+}
+
+.button.snap:hover {
+  background-color: #3e8e41
+}
+
+.button.snap:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #446644;
+}
+
+.button.again {
+  background-color: #e78947;
+  box-shadow: 0 9px #bd703a;
+}
+
+.button.again:hover {
+  background-color: #dd8344;
+}
+
+.button.again:active {
+  background-color: #dd8344;
+  box-shadow: 0 5px #bd703a;
+}
+
+.button.cancel {
+  background-color: #dc4e4e;
+  box-shadow: 0 9px #af2e34;
+}
+
+.button.cancel:hover {
+  background-color: #ef5959;
+}
+
+.button.cancel:active {
+  background-color: #ef5959;
+  box-shadow: 0 5px #af2e34;
+}
+
+#app, #App, #middle {
+  width: 100%;
+  height: 100%;
+}
+
+#App {
+  position: fixed;
+  background-color: black;
+	text-align: center;
+}
+
+#header {
+	position: absolute;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px;
+  z-index: 10;
+}
+
+#middle {
+  text-align: center;
+}
+
+video {
+  transition: 2s;
+}
+
+video, img {
+	width: 100%;
+}
+

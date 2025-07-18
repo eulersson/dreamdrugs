@@ -1,0 +1,35 @@
+apiVersion: skaffold/v4beta1
+kind: Config
+metadata:
+  name: dreamdrugs
+build:
+  artifacts:
+  - image: gcr.io/dreamdrugs/backend
+    context: backend
+    sync:
+      infer:
+      - app.py
+      - dreamdrugs/**/*.py
+  - image: gcr.io/dreamdrugs/frontend
+    context: frontend
+    sync:
+      infer:
+      - src/**/*
+      - server.js
+deploy:
+  helm:
+    releases:
+    - name: dreamdrugs
+      chartPath: deploy/dreamdrugs
+      setValues:
+        development: true
+        backendImage: gcr.io/dreamdrugs/backend
+        frontendImage: gcr.io/dreamdrugs/frontend
+        redis:
+          master:
+            persistence:
+              enabled: false
+          password: pass1234
+          slave:
+            persistence:
+              enabled: false

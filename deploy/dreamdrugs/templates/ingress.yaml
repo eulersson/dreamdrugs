@@ -1,0 +1,42 @@
+{{ if .Values.ingress }}
+# Strip prefix /api before proxying the request.
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-prefix
+spec:
+  stripPrefix:
+    prefixes:
+      - /api
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ template "dreamdrugs.fullname" . }}-ingress
+  annotations:
+    # Strip prefix /api before proxying the request. I have to prefix with `default-`
+    # because the namespace the middleware lives in is the default one.
+    #
+    #  https://community.traefik.io/t/how-to-configure-middleware-with-kubernetes-ingress-middleware-xyz-does-not-exist/5016/3
+    #
+    traefik.ingress.kubernetes.io/router.middlewares: default-strip-prefix@kubernetescrd
+spec:
+  rules:
+    - host: localhost
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ template "dreamdrugs.fullname" . }}-backend
+                port:
+                  number: 6000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ template "dreamdrugs.fullname" . }}-frontend
+                port:
+                  number: 3000
+{{ end }}

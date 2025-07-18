@@ -1,0 +1,14 @@
+.Progress {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  color: white;
+  transition: 1s;
+}
+
+.Progress .percentage {
+  font-size: 100px;
+  position: absolute;
+  width: 100%;
+  top: calc(50% - 50px);
+}

@@ -1,0 +1,31 @@
+#Parameters {
+  width: 100%;
+  height: 100%;
+  transition: 1s;
+  font-size: 14px;
+}
+
+#Parameters > .dropdown {
+  margin-top: 25px;
+  display: inline-block;
+  background-color: #e89136;
+  border-right: 5px solid #bb7425;
+  border-bottom: 5px solid #bb7425;
+}
+
+#Parameters > .dropdown:hover {
+  background-color: #e48a32;
+}
+
+#parameters-layout {
+  max-width: 900px;
+  margin: auto;
+  padding: 50px;
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+}
+
+.widget {
+  padding: 10px;
+}

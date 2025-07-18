@@ -1,0 +1,43 @@
+version: "3"
+services:
+  frontend:
+    restart: always
+    build: ./frontend
+    volumes:
+      - ./frontend:/dreamdrugs/frontend
+      - /dreamdrugs/frontend/node_modules
+    environment:
+      - NODE_ENV=development
+      - BACKEND_DOMAIN=backend
+      - REDIS_HOST=database
+      - REDIS_PASSWORD=pass1234
+
+  backend:
+    restart: always
+    build: ./backend
+    volumes:
+      - ./backend:/dreamdrugs/backend
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DEBUG=1
+      - BACKEND_PORT=6000
+      - REDIS_HOST=database
+      - REDIS_PASSWORD=pass1234
+
+  database:
+    restart: always
+    image: redis
+    command: redis-server --requirepass pass1234
+
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    links:
+      - backend
+      - frontend
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./certificate-generation.sh:/docker-entrypoint.d/certificate-generation.sh

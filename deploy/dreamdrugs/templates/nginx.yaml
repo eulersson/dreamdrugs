@@ -1,0 +1,120 @@
+{{ if not .Values.ingress }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ template "dreamdrugs.fullname" . }}-nginx
+  labels:
+    app: {{ template "dreamdrugs.fullname" . }}-nginx
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "dreamdrugs.fullname" . }}-nginx
+  template:
+    metadata:
+      labels:
+        app: {{ template "dreamdrugs.fullname" . }}-nginx
+    spec:
+      # TODO: (review) I believe with the container image ports hostNetwork and
+      # dnsPolicy is not needed.
+      #
+      #   https://lambda.mu/hostports_and_hostnetwork/
+      #
+      # hostNetwork: true
+      # dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - name: http
+              containerPort: 80
+              hostPort: 80
+            - name: https
+              containerPort: 443
+              hostPort: 443
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx
+            - name: docker-init-scripts
+              mountPath: /docker-entrypoint.d/certificate-generation.sh
+              subPath: certificate-generation.sh
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: {{ template "dreamdrugs.fullname" . }}-nginx-conf
+        - name: docker-init-scripts
+          configMap:
+            name: {{ template "dreamdrugs.fullname" . }}-docker-init-scripts
+            defaultMode: 0755
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "dreamdrugs.fullname" . }}-nginx-conf
+data:
+  # https://www.humankode.com/ssl/create-a-selfsigned-certificate-for-nginx-in-5-minutes
+  nginx.conf: |
+    worker_processes 1;
+    error_log /dev/stdout info;
+
+    events {
+      worker_connections 1024;
+    }
+
+    http {
+      access_log /dev/stdout;
+
+      server {
+        listen 80;
+
+        # Use self-signed certificate in development mode. If it's production we do not
+        # require it because Cloudflare gives us free SSL/TLS encryption.
+        {{ if .Values.development }}
+        listen 443 ssl;
+        listen [::]:443 ssl;
+        server_name localhost;
+        ssl_certificate /etc/ssl/certs/selfsigned.crt;
+        ssl_certificate_key /etc/ssl/private/selfsigned.key;
+        ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
+        {{ end }}
+
+        location /api/ {
+          proxy_pass http://{{ template "dreamdrugs.fullname" . }}-backend:6000/;
+        }
+
+        location /socket.io/ {
+          # Configuration needed for socket.io to work.
+          #
+          #     https://www.nginx.com/blog/nginx-nodejs-websockets-socketio/
+          #
+          proxy_http_version 1.1;
+          proxy_set_header Host $host;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "upgrade";
+
+
+          proxy_pass http://{{ template "dreamdrugs.fullname" . }}-frontend:3000;
+        }
+
+        location / {
+          proxy_pass http://{{ template "dreamdrugs.fullname" . }}-frontend:3000;
+        }
+      }
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "dreamdrugs.fullname" . }}-docker-init-scripts
+data:
+  # https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-16-04
+  # https://stackoverflow.com/a/44047595/2649699
+  certificate-generation.sh: |
+    apk update && apk add --no-cache openssl
+    openssl genrsa -des3 -passout pass:abcabc -out /etc/ssl/private/selfsigned.pass.key 2048
+    openssl rsa -passin pass:abcabc -in /etc/ssl/private/selfsigned.pass.key -out /etc/ssl/private/selfsigned.key
+    rm /etc/ssl/private/selfsigned.pass.key
+    openssl req -new -key /etc/ssl/private/selfsigned.key -out /etc/ssl/selfsigned.csr -subj "/C=ES/ST=Barcelona/L=Barcelona/O=dreamdrugs/OU=IT Department/CN=dreamdrugs"
+    openssl x509 -req -days 365 -in /etc/ssl/selfsigned.csr -signkey /etc/ssl/private/selfsigned.key -out /etc/ssl/certs/selfsigned.crt
+{{ end }}
